@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Dashboard",
+        "path": "/",
+        "icon": "DashboardIcon"
+    },
+    {
+        "name": "Menu",
+        "path": "/menu",
+        "icon": "MenuIcon"
+    },
+    {
+        "name": "Orders",
+        "path": "/orders",
+        "icon": "OrdersIcon"
+    },
+    {
+        "name": "Customers",
+        "path": "/customers",
+        "icon": "CustomersIcon"
+    },
+    {
+        "name": "Drivers",
+        "path": "/drivers",
+        "icon": "DriversIcon"
+    },
+    {
+        "name": "Settings",
+        "path": "/settings",
+        "icon": "SettingsIcon"
+    }
+]

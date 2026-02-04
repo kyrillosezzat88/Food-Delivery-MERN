@@ -15,6 +15,25 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+    
+    /* Absolute path imports */
+    "baseUrl": ".",
+    "paths": {
+        "@assets/*": ["src/assets/*"],
+        "@components/*": ["src/components/*"],
+        "@hooks": ["src/hooks/index"],
+        "@pages": ["src/pages/index"],
+        "@routes/*": ["src/routes/*"],
+        "@store/*": ["src/store/*"],
+        "@types": ["src/types/index"],
+        "@styles/*": ["src/styles/*"],
+        "@layouts": ["src/layouts/index"],
+        "@utils/*": ["src/utils/*"],
+        "@services/*": ["src/services/*"],
+        "@validations": ["src/validations/index"],
+        "@icons": ["src/assets/icons/index"],
+        "@images": ["src/assets/images"]
+      },
 
     /* Linting */
     "strict": true,
@@ -24,5 +43,6 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["src"],
+
 }

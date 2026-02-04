@@ -1,0 +1,39 @@
+import type { TFoodCard } from "@types";
+
+const FoodCard = ({ id, name, image, count, price }: TFoodCard) => {
+  return (
+    <article
+      key={id}
+      className="flex flex-col overflow-hidden bg-white border border-gray-100 rounded-3xl shadow-sm hover:shadow-md transition"
+    >
+      <div className="relative h-40 w-full overflow-hidden">
+        <img src={image} alt={name} className="object-cover w-full h-full" />
+        <button className="absolute top-3 right-3 px-3 py-1 text-[11px] font-medium rounded-full bg-white text-gray-800 shadow-sm">
+          Edit
+        </button>
+      </div>
+
+      <div className="flex flex-col justify-between flex-1 p-4">
+        <div>
+          <h3 className="mb-1 text-sm font-semibold text-gray-900 line-clamp-2">
+            {name}
+          </h3>
+          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-gray-500">
+            <span>Count: {count}</span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between mt-3">
+          <span className="text-base font-semibold text-gray-900">
+            ${price}
+          </span>
+          <button className="px-5 py-1.5 text-xs font-semibold text-white rounded-full bg-primary hover:opacity-90 transition">
+            Delete
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+};
+
+export default FoodCard;

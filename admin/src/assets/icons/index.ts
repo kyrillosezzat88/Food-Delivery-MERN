@@ -1,0 +1,16 @@
+export { default as DashboardIcon } from "./dashboard.svg?react";
+export { default as MenuIcon } from "./menu.svg?react";
+export { default as LogoIcon } from "./logo.svg?react";
+export { default as OrdersIcon } from "./orders.svg?react";
+export { default as CustomersIcon } from "./customers.svg?react";
+export { default as SettingsIcon } from "./settings.svg?react";
+export { default as DriversIcon } from "./drivers.svg?react";
+export { default as OrderIcon } from "./order.svg?react";
+export { default as OrderDelivered } from "./order_Delivered.svg?react";
+export { default as OrderCanceled } from "./order_cancel.svg?react";
+export { default as OrderReturned } from "./order_return.svg?react";
+export { default as TrashIcon } from "./trash.svg?react";
+export { default as EditIcon } from "./edit.svg?react";
+export { default as ArrowLeftIcon } from "./arrow-left.svg?react";
+export { default as ArrowRightIcon } from "./arrow-right.svg?react";
+export { default as UploadIcon } from "./upload.svg?react";

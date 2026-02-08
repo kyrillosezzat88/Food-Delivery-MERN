@@ -8,6 +8,8 @@ import {
   updateCategoryController,
 } from "../controllers/category.js";
 import { adminJwtMiddleware } from "../middleware/adminJwt.js";
+import { paginate } from "../middleware/pagination.js";
+import { Category } from "../modules/category.js";
 
 const categoryRouter = Router();
 
@@ -27,6 +29,6 @@ categoryRouter.put(
 
 categoryRouter.delete("/:id", adminJwtMiddleware, deleteCategoryController);
 
-categoryRouter.get("/", getCategoriesController);
+categoryRouter.get("/", paginate(Category), getCategoriesController);
 
 export default categoryRouter;

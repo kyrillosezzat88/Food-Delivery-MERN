@@ -22,7 +22,7 @@ export const LoginController = async (req: Request, res: Response) => {
     const userData = { ...user.toObject(), password: undefined };
     res
       .status(200)
-      .json({ message: "Login successful", user: { ...userData, token } });
+      .json({ message: "Login successful", user: userData, token });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
   }

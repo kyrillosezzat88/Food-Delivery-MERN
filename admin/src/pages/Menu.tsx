@@ -1,7 +1,9 @@
 import { Modal } from "@components/common";
 import { AddCategory, AddProduct } from "@components/forms";
 import { CategoryCard, FoodCard } from "@components/restaurant";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@store/hooks";
+import { actGetCategories } from "@store/category/categorySlice";
 
 const initialCategories = [
   { id: 2, name: "Leg Piece" },
@@ -50,7 +52,10 @@ const items = [
 const Menu = () => {
   const [openAddCategoryModal, setOpenAddCategoryModal] = useState(false);
   const [openAddItemModal, setOpenAddItemModal] = useState(false);
-
+  const dispatch = useAppDispatch();
+  const { categories, error, loading } = useAppSelector(
+    (state) => state.categories,
+  );
   // open category
   const addCategoryModal = (status: boolean) => {
     setOpenAddCategoryModal(status);
@@ -60,7 +65,10 @@ const Menu = () => {
   const addItemModal = (status: boolean) => {
     setOpenAddItemModal(status);
   };
-
+  useEffect(() => {
+    // Dispatch action to fetch categories if needed
+    dispatch(actGetCategories());
+  }, [dispatch]);
   return (
     <section className="p-10 space-y-8">
       <Modal
@@ -91,7 +99,7 @@ const Menu = () => {
             Add New Category
           </span>
         </button>
-        {initialCategories.map((cat) => (
+        {categories.data.map((cat) => (
           <CategoryCard key={cat.id} {...cat} />
         ))}
       </div>

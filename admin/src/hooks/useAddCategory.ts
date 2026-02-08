@@ -1,9 +1,12 @@
+import { actAddCategory } from "@store/category/categorySlice";
+import { useAppDispatch } from "@store/hooks";
 import type { TCategoryCard } from "@types";
 import React, { useState } from "react";
 
 type CategoryFormData = Omit<TCategoryCard, "id">;
 
 const useAddCategory = ({ onClose }: { onClose: () => void }) => {
+  const dispatch = useAppDispatch();
   const [category, setCategory] = useState<CategoryFormData>({
     name: "",
     image: "",
@@ -70,8 +73,15 @@ const useAddCategory = ({ onClose }: { onClose: () => void }) => {
 
     // submit logic here
     console.log("Submitting category:", category);
-    setError(null);
-    onClose();
+    dispatch(actAddCategory(category))
+      .unwrap()
+      .then(() => {
+        setError(null);
+        onClose();
+      })
+      .catch((error) => {
+        setError(error.message || "Failed to add category");
+      });
   };
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);

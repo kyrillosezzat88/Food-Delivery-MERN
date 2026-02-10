@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { TCategoryCard, TLoading } from "@types";
+import type { TCategory, TLoading } from "@types";
 import actGetCategories from "./actions/actGetCategories";
 import actAddCategory from "./actions/actAddCategory";
 
@@ -7,7 +7,7 @@ type TCategories = {
   TotalPages: number;
   TotalRecords: number;
   currentPage: number;
-  data: TCategoryCard[];
+  data: TCategory[];
 };
 
 type TInitialState = {

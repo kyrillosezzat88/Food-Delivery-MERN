@@ -3,7 +3,7 @@ import {
   RouterProvider,
   Navigate,
 } from "react-router-dom";
-import { Dashboard, Menu, Login } from "@pages";
+import { Dashboard, Menu, Login, Orders } from "@pages";
 import { MainLayout } from "@layouts";
 import PrivateRoute from "@routes/PrivateRoute";
 
@@ -28,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "/menu",
         element: <Menu />,
+      },
+      {
+        path: "/orders",
+        element: <Orders />,
       },
     ],
   },

@@ -5,102 +5,113 @@ interface AddProductProps {
   onClose: () => void;
 }
 
-const categories = [
-  { id: 2, name: "Leg Piece" },
-  { id: 3, name: "Boneless" },
-  { id: 4, name: "Normal cut" },
-  { id: 5, name: "Curry cut" },
-  { id: 6, name: "Wings" },
-  { id: 7, name: "Lollipop" },
-];
-
 const AddProduct = ({ onClose }: AddProductProps) => {
   const {
-    product,
-    setProduct,
-    error,
-    handleChange,
+    formErrors,
     handleFileChange,
     handleDrop,
     handleSubmit,
     fileInputRef,
+    categories,
+    register,
+    categoriesLoading,
+    categoriesError,
+    onSubmit,
+    getValues,
+    removeImage,
+    submitting,
   } = useAddProduct({ onClose });
 
-  const isDisabled =
-    !product?.name ||
-    product.name.trim() === "" ||
-    product.price === "" ||
-    Number(product.price) <= 0 ||
-    !product?.images ||
-    product.images.length === 0;
-
-  const removeImage = (index: number) => {
-    setProduct({
-      ...product,
-      images: product.images.filter((_, i) => i !== index),
-    });
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* Error Alert */}
+      {formErrors.root && (
+        <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+          <p className="text-red-700 text-sm font-medium">
+            {formErrors.root.message}
+          </p>
+        </div>
+      )}
+
       <div>
         <label className="block text-sm font-semibold mb-2">Product name</label>
         <input
           autoFocus
-          onChange={handleChange}
-          value={product.name}
-          name="name"
-          className="block w-full rounded-xl p-3 border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
+          disabled={submitting}
+          {...register("name")}
+          className="block w-full rounded-xl p-3 border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
           placeholder="e.g. Chicken Curry Cut"
           aria-label="Product name"
         />
+        {formErrors.name && (
+          <p className="text-red-500 text-sm mt-1">{formErrors.name.message}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-sm font-semibold mb-2">Price</label>
           <input
-            onChange={handleChange}
-            value={String(product.price === "" ? "" : product.price)}
-            name="price"
             type="number"
-            min={0}
             step="0.01"
-            className="block w-full rounded-xl p-3 border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
+            disabled={submitting}
+            className="block w-full rounded-xl p-3 border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
             placeholder="e.g. 149.99"
             aria-label="Price"
+            {...register("price", { valueAsNumber: true })}
           />
+          {formErrors.price && (
+            <p className="text-red-500 text-sm mt-1">
+              {formErrors.price.message}
+            </p>
+          )}
         </div>
 
         <div>
           <label className="block text-sm font-semibold mb-2">Category</label>
           <select
-            name="categoryId"
-            value={product.categoryId ?? ""}
-            onChange={handleChange}
-            className="block w-full rounded-xl p-3 border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
+            disabled={submitting || categoriesLoading === "pending"}
+            {...register("category")}
+            className="block w-full rounded-xl p-3 border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Category"
           >
-            <option value="">Select category</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
+            {categoriesLoading === "pending" ? (
+              <option>Loading categories...</option>
+            ) : categoriesError ? (
+              <option>Error loading categories</option>
+            ) : (
+              <>
+                <option value="">Select category</option>
+                {categories.data.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.name}
+                  </option>
+                ))}
+              </>
+            )}
           </select>
+          {formErrors.category && (
+            <p className="text-red-500 text-sm mt-1">
+              {formErrors.category.message}
+            </p>
+          )}
         </div>
       </div>
 
       <div>
         <label className="block text-sm font-semibold mb-2">Description</label>
         <textarea
-          name="description"
-          onChange={handleChange}
-          value={product.description}
+          disabled={submitting}
+          {...register("description")}
           rows={3}
-          className="block w-full rounded-xl p-3 border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
+          className="block w-full rounded-xl p-3 border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
           placeholder="Short description"
         />
+        {formErrors.description && (
+          <p className="text-red-500 text-sm mt-1">
+            {formErrors.description.message}
+          </p>
+        )}
       </div>
 
       <div>
@@ -108,21 +119,21 @@ const AddProduct = ({ onClose }: AddProductProps) => {
           Product images <span className="text-red-500">*</span>
         </label>
 
-        {!product?.images || product.images.length === 0 ? (
+        {!getValues("gallery") || getValues("gallery").length === 0 ? (
           <div
             onDragOver={(e) => {
               e.preventDefault();
             }}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
+            onDrop={submitting ? undefined : handleDrop}
+            onClick={() => !submitting && fileInputRef.current?.click()}
             role="button"
-            tabIndex={0}
+            tabIndex={submitting ? -1 : 0}
             onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
+              if (!submitting && (e.key === "Enter" || e.key === " ")) {
                 fileInputRef.current?.click();
               }
             }}
-            className="flex items-center justify-center gap-3 p-4 rounded-xl border-2 border-dashed border-gray-200 cursor-pointer hover:shadow-md transition hover:border-primary/70 hover:bg-primary/5"
+            className="flex items-center justify-center gap-3 p-4 rounded-xl border-2 border-dashed border-gray-200 cursor-pointer hover:shadow-md transition hover:border-primary/70 hover:bg-primary/5 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Icon name="UploadIcon" className="text-primary w-9 h-9" />
             <div className="text-sm text-gray-600">
@@ -139,13 +150,14 @@ const AddProduct = ({ onClose }: AddProductProps) => {
               accept="image/*"
               onChange={handleFileChange}
               className="hidden"
+              disabled={submitting}
               multiple
             />
           </div>
         ) : (
           <div className="max-h-48 overflow-y-auto p-2 rounded-lg border border-gray-100">
             <div className="grid grid-cols-3 gap-3">
-              {product.images.map((src, idx) => (
+              {getValues("gallery")?.map((src, idx) => (
                 <div key={idx} className="relative inline-block">
                   <img
                     src={src}
@@ -154,9 +166,10 @@ const AddProduct = ({ onClose }: AddProductProps) => {
                   />
                   <button
                     type="button"
+                    disabled={submitting}
                     onClick={() => removeImage(idx)}
                     aria-label="Remove image"
-                    className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white shadow flex items-center justify-center hover:bg-red-50 transition"
+                    className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white shadow flex items-center justify-center hover:bg-red-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Icon name="TrashIcon" className="text-red-500" />
                   </button>
@@ -165,8 +178,9 @@ const AddProduct = ({ onClose }: AddProductProps) => {
 
               <button
                 type="button"
+                disabled={submitting}
                 onClick={() => fileInputRef.current?.click()}
-                className="flex items-center justify-center gap-3 p-3 rounded-xl border border-dashed border-gray-200 bg-white hover:shadow-sm"
+                className="flex items-center justify-center gap-3 p-3 rounded-xl border border-dashed border-gray-200 bg-white hover:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Icon name="UploadIcon" className="text-primary w-6 h-6" />
                 <span className="text-sm">Add more</span>
@@ -179,13 +193,16 @@ const AddProduct = ({ onClose }: AddProductProps) => {
               accept="image/*"
               onChange={handleFileChange}
               className="hidden"
+              disabled={submitting}
               multiple
             />
           </div>
         )}
 
-        {error && /image|file|size/i.test(String(error)) && (
-          <p className="text-red-500 text-sm mt-2">{error}</p>
+        {formErrors.gallery && (
+          <p className="text-red-500 text-sm mt-2">
+            {formErrors.gallery.message}
+          </p>
         )}
       </div>
 
@@ -194,20 +211,19 @@ const AddProduct = ({ onClose }: AddProductProps) => {
           <label className="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"
-              checked={product?.active}
-              onChange={() =>
-                setProduct({ ...product, active: !product?.active })
-              }
+              disabled={submitting}
+              {...register("active")}
+              checked={getValues("active") ?? false}
               className="sr-only"
             />
             <div
               className={`w-10 h-6 rounded-full transition-colors ${
-                product?.active ? "bg-primary" : "bg-gray-200"
+                getValues("active") ? "bg-primary" : "bg-gray-200"
               }`}
             ></div>
             <div
               className={`absolute left-1 w-4 h-4 bg-white rounded-full shadow transform transition ${
-                product?.active ? "translate-x-4" : "translate-x-0"
+                getValues("active") ? "translate-x-4" : "translate-x-0"
               }`}
             ></div>
           </label>
@@ -223,26 +239,30 @@ const AddProduct = ({ onClose }: AddProductProps) => {
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer px-4 py-2 rounded-lg border border-gray-200 hover:shadow-sm transition"
+            disabled={submitting}
+            className="cursor-pointer px-4 py-2 rounded-lg border border-gray-200 hover:shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             type="submit"
-            disabled={isDisabled}
-            aria-disabled={isDisabled}
-            className={`cursor-pointer px-5 py-2 rounded-lg bg-primary text-white font-semibold shadow-md hover:opacity-95 transition ${
-              isDisabled ? "opacity-50 cursor-not-allowed" : ""
+            disabled={submitting}
+            aria-disabled={submitting}
+            className={`cursor-pointer px-5 py-2 rounded-lg bg-primary text-white font-semibold shadow-md hover:opacity-95 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${
+              submitting ? "" : ""
             }`}
           >
-            Save
+            {submitting ? (
+              <>
+                <span className="animate-spin">⏳</span>
+                Saving...
+              </>
+            ) : (
+              "Save"
+            )}
           </button>
         </div>
       </div>
-
-      {error && !/image|file|size/i.test(String(error)) && (
-        <p className="text-red-500 text-sm">{error}</p>
-      )}
     </form>
   );
 };

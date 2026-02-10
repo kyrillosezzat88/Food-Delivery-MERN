@@ -4,58 +4,22 @@ import { CategoryCard, FoodCard } from "@components/restaurant";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { actGetCategories } from "@store/category/categorySlice";
-
-const initialCategories = [
-  { id: 2, name: "Leg Piece" },
-  { id: 3, name: "Boneless" },
-  { id: 4, name: "Normal cut" },
-  { id: 5, name: "Curry cut", active: true },
-  { id: 6, name: "Wings" },
-  { id: 7, name: "Lollipop" },
-];
-
-const items = [
-  {
-    id: 1,
-    name: "Chicken curry cut - small pieces",
-    price: 140,
-    count: 1,
-    image:
-      "https://images.unsplash.com/photo-1604908176997-1251884b08a3?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 2,
-    name: "Chicken curry cut - small pieces (Large Pack)",
-    price: 599,
-    count: 1,
-    image:
-      "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 3,
-    name: "Chicken curry cut - Large pieces",
-    price: 140,
-    count: 1,
-    image:
-      "https://images.unsplash.com/photo-1588167865096-71c620227d92?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 4,
-    name: "Chicken curry cut - Large pieces (Large Pack)",
-    price: 599,
-    count: 1,
-    image:
-      "https://images.unsplash.com/photo-1517244683847-7456b63c5969?auto=format&fit=crop&w=800&q=80",
-  },
-];
+import { actGetProducts } from "@store/item/ProductSlice";
 
 const Menu = () => {
   const [openAddCategoryModal, setOpenAddCategoryModal] = useState(false);
   const [openAddItemModal, setOpenAddItemModal] = useState(false);
   const dispatch = useAppDispatch();
-  const { categories, error, loading } = useAppSelector(
-    (state) => state.categories,
-  );
+  const {
+    categories,
+    loading: categoryLoading,
+    error: categoryError,
+  } = useAppSelector((state) => state.categories);
+  const {
+    products,
+    loading: itemLoading,
+    error: itemError,
+  } = useAppSelector((state) => state.products);
   // open category
   const addCategoryModal = (status: boolean) => {
     setOpenAddCategoryModal(status);
@@ -66,9 +30,10 @@ const Menu = () => {
     setOpenAddItemModal(status);
   };
   useEffect(() => {
-    // Dispatch action to fetch categories if needed
     dispatch(actGetCategories());
+    dispatch(actGetProducts());
   }, [dispatch]);
+
   return (
     <section className="p-10 space-y-8">
       <Modal
@@ -100,7 +65,7 @@ const Menu = () => {
           </span>
         </button>
         {categories.data.map((cat) => (
-          <CategoryCard key={cat.id} {...cat} />
+          <CategoryCard key={cat._id} {...cat} />
         ))}
       </div>
 
@@ -117,8 +82,8 @@ const Menu = () => {
           <p className="text-sm font-medium text-gray-700">Add New Item</p>
         </article>
 
-        {items.map((item) => (
-          <FoodCard {...item} />
+        {products.map((product, index) => (
+          <FoodCard key={index} {...product} />
         ))}
       </div>
     </section>

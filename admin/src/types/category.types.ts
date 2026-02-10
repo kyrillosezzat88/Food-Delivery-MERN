@@ -1,5 +1,5 @@
-export type TCategoryCard = {
-  id: string | number;
+export type TCategory = {
+  _id: string;
   name: string;
   active?: boolean;
   image?: string;

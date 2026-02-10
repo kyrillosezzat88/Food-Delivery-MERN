@@ -1,13 +1,17 @@
-import type { TFoodCard } from "@types";
+import type { TProduct } from "@types";
 
-const FoodCard = ({ id, name, image, count, price }: TFoodCard) => {
+const FoodCard = ({ id, name, mainImage, count, price }: TProduct) => {
   return (
     <article
       key={id}
       className="flex flex-col overflow-hidden bg-white border border-gray-100 rounded-3xl shadow-sm hover:shadow-md transition"
     >
       <div className="relative h-40 w-full overflow-hidden">
-        <img src={image} alt={name} className="object-cover w-full h-full" />
+        <img
+          src={mainImage}
+          alt={name}
+          className="object-cover w-full h-full"
+        />
         <button className="absolute top-3 right-3 px-3 py-1 text-[11px] font-medium rounded-full bg-white text-gray-800 shadow-sm">
           Edit
         </button>

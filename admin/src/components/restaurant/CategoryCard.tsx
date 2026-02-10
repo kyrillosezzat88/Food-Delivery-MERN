@@ -1,6 +1,6 @@
-import type { TCategoryCard } from "@types";
+import type { TCategory } from "@types";
 
-const CategoryCard = ({ id, name, active, image }: TCategoryCard) => {
+const CategoryCard = ({ id, name, active, image }: TCategory) => {
   return (
     <button
       key={id}

@@ -20,9 +20,12 @@ export const LoginController = async (req: Request, res: Response) => {
       process.env.JWT_SECRET as string,
     );
     const userData = { ...user.toObject(), password: undefined };
-    res
-      .status(200)
-      .json({ message: "Login successful", user: userData, token });
+    res.status(200).json({
+      message: "Login successful",
+      status: 200,
+      user: userData,
+      token,
+    });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
   }
@@ -44,9 +47,11 @@ export const RegisterController = async (req: Request, res: Response) => {
       phoneNumber,
     });
     await newUser.save();
-    return res
-      .status(201)
-      .json({ message: "User registered successfully", user: newUser });
+    return res.status(201).json({
+      message: "User registered successfully",
+      user: newUser,
+      status: 201,
+    });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
   }

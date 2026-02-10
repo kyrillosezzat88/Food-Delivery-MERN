@@ -1,9 +1,9 @@
 import { actAddCategory } from "@store/category/categorySlice";
 import { useAppDispatch } from "@store/hooks";
-import type { TCategoryCard } from "@types";
+import type { TCategory } from "@types";
 import React, { useState } from "react";
 
-type CategoryFormData = Omit<TCategoryCard, "id">;
+type CategoryFormData = Omit<TCategory, "id">;
 
 const useAddCategory = ({ onClose }: { onClose: () => void }) => {
   const dispatch = useAppDispatch();

@@ -1,21 +1,9 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import actLogin from "./actions/actLogin";
-import type { TLoading } from "@types";
+import type { TLoading, TUser } from "@types";
 
 const token = localStorage.getItem("token");
 const user = localStorage.getItem("user");
-
-type TUser = {
-  id: string;
-  name: string;
-  email: string;
-  isAdmin: boolean;
-  address: string;
-  phoneNumber: string;
-  createdAt: Date;
-  profileImage?: string;
-  orders: string[];
-};
 
 type TInitialState = {
   token: string | null;
@@ -41,15 +29,12 @@ const authSlice = createSlice({
       state.error = null;
     });
 
-    builder.addCase(
-      actLogin.fulfilled,
-      (state, action: PayloadAction<{ token: string; user: TUser }>) => {
-        state.token = action.payload.token;
-        state.user = action.payload.user;
-        state.loading = "succeeded";
-        state.error = null;
-      },
-    );
+    builder.addCase(actLogin.fulfilled, (state, action) => {
+      state.token = action.payload.token;
+      state.user = action.payload.user;
+      state.loading = "succeeded";
+      state.error = null;
+    });
 
     builder.addCase(actLogin.rejected, (state, action) => {
       state.loading = "failed";

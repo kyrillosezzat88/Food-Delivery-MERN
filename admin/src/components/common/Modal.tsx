@@ -21,7 +21,7 @@ const Modal = ({ title, children, isOpen, onClose }: TModal) => {
         onClick={onClose}
       />
 
-      <div className="relative bg-white w-11/12 sm:w-1/3 p-8 rounded-2xl shadow-xl z-10">
+      <div className="relative bg-white w-11/12 sm:w-1/3 p-8 rounded-2xl shadow-xl z-10 max-h-[90vh] overflow-y-auto">
         {title && (
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">{title}</h2>

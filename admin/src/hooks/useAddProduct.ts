@@ -26,6 +26,7 @@ const useAddProduct = ({ onClose }: { onClose: () => void }) => {
     getValues,
     setError,
     clearErrors,
+    watch,
     formState: { errors },
   } = useForm<TProductInput>({
     resolver: zodResolver(productSchema),
@@ -36,7 +37,7 @@ const useAddProduct = ({ onClose }: { onClose: () => void }) => {
     loading: categoriesLoading,
     error: categoriesError,
   } = useAppSelector((state) => state.categories);
-
+  const isActive = watch("active");
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
@@ -109,6 +110,7 @@ const useAddProduct = ({ onClose }: { onClose: () => void }) => {
     try {
       setSubmitting(true);
       clearErrors();
+      console.log("Form data before submission:", formData);
 
       // Use the first image as mainImage, rest as gallery
       const gallery = formData.gallery || [];
@@ -178,6 +180,7 @@ const useAddProduct = ({ onClose }: { onClose: () => void }) => {
     getValues,
     submitting,
     removeImage,
+    isActive,
   };
 };
 

@@ -6,14 +6,7 @@ import { productSchema } from "../validation/productValidation";
 import { actAddProduct } from "@store/item/ProductSlice";
 import type { TProductInput } from "../validation/productValidation";
 import type { TProduct } from "@types";
-
-const readFileAsDataURL = (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+import { processFiles } from "@utils/uploadImages";
 
 const useAddProduct = ({ onClose }: { onClose: () => void }) => {
   const [submitting, setSubmitting] = useState(false);
@@ -37,73 +30,40 @@ const useAddProduct = ({ onClose }: { onClose: () => void }) => {
     loading: categoriesLoading,
     error: categoriesError,
   } = useAppSelector((state) => state.categories);
+
   const isActive = watch("active");
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
-    if (files.length === 0) return;
-
-    // Validate sizes and types
-    for (const file of files) {
-      if (!file.type.startsWith("image/")) {
-        setError("gallery", { message: "Only image files are allowed" });
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        setError("gallery", { message: "File size must be less than 5MB" });
-        return;
-      }
-    }
-    try {
-      // Convert files to Data URLs
-      const urls = await Promise.all(files.map(readFileAsDataURL));
-
-      // Update React Hook Form value
-      const currentGallery = getValues("gallery") ?? [];
-      setValue(
-        "gallery",
-        [...currentGallery, ...urls], // append new images
-        { shouldValidate: true },
-      );
-      console.log("Updated gallery:", getValues("gallery"));
-      clearErrors("gallery");
-    } catch (err) {
-      console.error(err);
-      setError("gallery", { message: "Failed to read files" });
-    }
+    await processFiles(files, {
+      maxSize: 5 * 1024 * 1024,
+      allowedTypes: ["image/"],
+      onError: (message) => setError("gallery", { message }),
+      onSuccess: (urls) => {
+        const currentGallery = getValues("gallery") ?? [];
+        setValue("gallery", [...currentGallery, ...urls], {
+          shouldValidate: true,
+        });
+        clearErrors("gallery");
+      },
+    });
   };
 
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const files = Array.from(e.dataTransfer?.files ?? []);
-    if (!files.length) return;
-
-    // Filter only images
-    const imageFiles = files.filter((file) => file.type.startsWith("image/"));
-    if (!imageFiles.length) {
-      setError("gallery", { message: "Only image files are allowed" });
-      return;
-    }
-
-    // Validate size < 5MB
-    const tooLarge = imageFiles.some((file) => file.size > 5 * 1024 * 1024);
-    if (tooLarge) {
-      setError("gallery", { message: "File size must be less than 5MB" });
-      return;
-    }
-
-    try {
-      // Convert to Data URLs
-      const urls = await Promise.all(imageFiles.map(readFileAsDataURL));
-      // Append to existing gallery in RHF
-      const currentGallery = getValues("gallery") ?? [];
-      setValue("gallery", [...currentGallery, ...urls], {
-        shouldValidate: true,
-      });
-      clearErrors();
-    } catch (err) {
-      console.error(err);
-      setError("gallery", { message: "Failed to read files" });
-    }
+    await processFiles(files, {
+      maxSize: 5 * 1024 * 1024,
+      allowedTypes: ["image/"],
+      onError: (message) => setError("gallery", { message }),
+      onSuccess: (urls) => {
+        const currentGallery = getValues("gallery") ?? [];
+        setValue("gallery", [...currentGallery, ...urls], {
+          shouldValidate: true,
+        });
+        clearErrors("gallery");
+      },
+    });
   };
 
   const onSubmit = async (formData: TProductInput) => {
@@ -118,7 +78,7 @@ const useAddProduct = ({ onClose }: { onClose: () => void }) => {
 
       // Prepare product data for API
       const productData: TProduct = {
-        id: "", // Backend will assign
+        _id: "",
         name: formData.name,
         description: formData.description,
         price: formData.price,

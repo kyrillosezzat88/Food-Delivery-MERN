@@ -7,7 +7,7 @@ import type {
   UseFormGetValues,
 } from "react-hook-form";
 
-type TFormGallery<T extends FieldValues> = {
+type TFormSingleImage<T extends FieldValues> = {
   formErrors: FieldErrors<T>;
   getValues: UseFormGetValues<T>;
   handleDrop: (e: React.DragEvent<HTMLDivElement>) => void;
@@ -15,10 +15,10 @@ type TFormGallery<T extends FieldValues> = {
   submitting: boolean;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   removeImage: (index: number) => void;
-  galleryFieldName: Path<T>; // <-- dynamic field name
+  imageFieldName: Path<T>; // <-- dynamic field name
 };
 
-const FormGallery = <T extends FieldValues>({
+const FormSingleImage = <T extends FieldValues>({
   formErrors,
   getValues,
   handleDrop,
@@ -26,9 +26,9 @@ const FormGallery = <T extends FieldValues>({
   submitting,
   fileInputRef,
   removeImage,
-  galleryFieldName,
-}: TFormGallery<T>) => {
-  const gallery = (getValues(galleryFieldName) as string[]) ?? [];
+  imageFieldName,
+}: TFormSingleImage<T>) => {
+  const uploadedImg = (getValues(imageFieldName) as string) ?? null;
 
   return (
     <div>
@@ -44,7 +44,7 @@ const FormGallery = <T extends FieldValues>({
         disabled={submitting}
         multiple
       />
-      {gallery.length === 0 ? (
+      {!uploadedImg ? (
         <div
           onDragOver={(e) => e.preventDefault()}
           onDrop={submitting ? undefined : handleDrop}
@@ -64,54 +64,38 @@ const FormGallery = <T extends FieldValues>({
             <div className="font-medium text-gray-800">
               Drag & drop or click to upload
             </div>
-            <div className="text-xs">
-              PNG, JPG up to 5MB (you can add multiple)
-            </div>
+            <div className="text-xs">PNG, JPG up to 5MB</div>
           </div>
         </div>
       ) : (
         <div className="max-h-48 overflow-y-auto p-2 rounded-lg border border-gray-100">
-          <div className="grid grid-cols-3 gap-3">
-            {gallery.map((src, idx) => (
-              <div key={idx} className="relative inline-block">
-                <img
-                  src={src}
-                  alt={`preview-${idx}`}
-                  className="w-28 h-28 rounded-xl object-cover shadow"
-                />
-
-                <button
-                  type="button"
-                  disabled={submitting}
-                  onClick={() => removeImage(idx)}
-                  aria-label="Remove image"
-                  className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white shadow flex items-center justify-center hover:bg-red-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Icon name="TrashIcon" className="text-red-500" />
-                </button>
-              </div>
-            ))}
+          <div className="relative inline-block">
+            <img
+              src={uploadedImg}
+              alt={`preview-img`}
+              className="w-28 h-28 rounded-xl object-cover shadow"
+            />
 
             <button
               type="button"
               disabled={submitting}
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center justify-center gap-3 p-3 rounded-xl border border-dashed border-gray-200 bg-white hover:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => null}
+              aria-label="Remove image"
+              className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white shadow flex items-center justify-center hover:bg-red-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Icon name="UploadIcon" className="text-primary w-6 h-6" />
-              <span className="text-sm">Add more</span>
+              <Icon name="TrashIcon" className="text-red-500" />
             </button>
           </div>
         </div>
       )}
 
-      {formErrors[galleryFieldName]?.message && (
+      {formErrors[imageFieldName]?.message && (
         <p className="text-red-500 text-sm mt-2">
-          {formErrors[galleryFieldName]?.message as string}
+          {formErrors[imageFieldName]?.message as string}
         </p>
       )}
     </div>
   );
 };
 
-export default FormGallery;
+export default FormSingleImage;

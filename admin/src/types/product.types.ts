@@ -1,5 +1,5 @@
 export type TProduct = {
-  id: string | number;
+  _id: string;
   name: string;
   mainImage: string;
   gallery?: string[];

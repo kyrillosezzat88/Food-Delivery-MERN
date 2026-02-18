@@ -1,9 +1,15 @@
+import { useAppDispatch } from "@store/hooks";
+import { actDeleteProduct } from "@store/item/ProductSlice";
 import type { TProduct } from "@types";
 
-const FoodCard = ({ id, name, mainImage, count, price }: TProduct) => {
+const FoodCard = ({ _id, name, mainImage, count, price }: TProduct) => {
+  const dispatch = useAppDispatch();
+  const deleteProduct = () => {
+    dispatch(actDeleteProduct(_id));
+  };
   return (
     <article
-      key={id}
+      key={_id}
       className="flex flex-col overflow-hidden bg-white border border-gray-100 rounded-3xl shadow-sm hover:shadow-md transition"
     >
       <div className="relative h-40 w-full overflow-hidden">
@@ -12,7 +18,7 @@ const FoodCard = ({ id, name, mainImage, count, price }: TProduct) => {
           alt={name}
           className="object-cover w-full h-full"
         />
-        <button className="absolute top-3 right-3 px-3 py-1 text-[11px] font-medium rounded-full bg-white text-gray-800 shadow-sm">
+        <button className="absolute top-3 right-3 cursor-pointer px-3 py-1 text-[11px] font-medium rounded-full bg-white text-gray-800 shadow-sm">
           Edit
         </button>
       </div>
@@ -31,7 +37,10 @@ const FoodCard = ({ id, name, mainImage, count, price }: TProduct) => {
           <span className="text-base font-semibold text-gray-900">
             ${price}
           </span>
-          <button className="px-5 py-1.5 text-xs font-semibold text-white rounded-full bg-primary hover:opacity-90 transition">
+          <button
+            onClick={deleteProduct}
+            className="cursor-pointer px-5 py-1.5 text-xs font-semibold text-white rounded-full bg-primary hover:opacity-90 transition"
+          >
             Delete
           </button>
         </div>

@@ -4,5 +4,6 @@ export { default as LoginForm } from "./LoginForm";
 export { default as FormField } from "./FormFiled";
 export { default as FormSelect } from "./FormSelect";
 export { default as FormGallery } from "./FormGallery";
+export { default as FormSingleImage } from "./FromSingleImage";
 export { default as FormCheckBox } from "./FormCheckBox";
 export { default as FormActions } from "./FormActions";

@@ -12,18 +12,19 @@ export const productSchema = z.object({
     .optional(),
   active: z.boolean().optional(),
   gallery: z
-    .array(
-      z
-        .string()
-        .refine(
-          (val) =>
-            val.startsWith("data:") ||
-            val.startsWith("http://") ||
-            val.startsWith("https://"),
-          "Gallery items must be valid data URLs or HTTP(S) URLs",
+    .array(z.string())
+    .default([])
+    .refine(
+      (val) =>
+        val.every(
+          (item) =>
+            item.startsWith("data:image/") ||
+            item.startsWith("http://") ||
+            item.startsWith("https://"),
         ),
+      "Gallery items must be valid image URLs or data URLs",
     )
-    .min(1, "At least one product image is required"),
+    .refine((val) => val.length > 0, "At least one product image is required"),
 });
 
 export type TProductInput = z.infer<typeof productSchema>;

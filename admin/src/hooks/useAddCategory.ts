@@ -2,99 +2,98 @@ import { actAddCategory } from "@store/category/categorySlice";
 import { useAppDispatch } from "@store/hooks";
 import type { TCategory } from "@types";
 import React, { useState } from "react";
-
-type CategoryFormData = Omit<TCategory, "id">;
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  categorySchema,
+  type TCategoryInput,
+} from "../validation/categoryValidation";
+import { processFiles } from "@utils/uploadImages";
 
 const useAddCategory = ({ onClose }: { onClose: () => void }) => {
   const dispatch = useAppDispatch();
-  const [category, setCategory] = useState<CategoryFormData>({
-    name: "",
-    image: "",
-    active: true,
+  const [submitting, setSubmitting] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    setError,
+    clearErrors,
+    watch,
+    formState: { errors },
+  } = useForm<TCategory>({
+    resolver: zodResolver(categorySchema),
   });
-  const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCategory({ ...category, [e.target.name]: e.target.value });
+  const isActive = watch("active");
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []).slice(0, 1);
+    await processFiles(files, {
+      maxSize: 5 * 1024 * 1024,
+      allowedTypes: ["image/"],
+      onError: (message) => setError("image", { message }),
+      onSuccess: ([url]) => {
+        setValue("image", url, { shouldValidate: true });
+        clearErrors("image");
+      },
+    });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Validate file size (5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setError("File size must be less than 5MB");
-        return;
-      }
-
-      // Create preview URL
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCategory({ ...category, image: reader.result as string });
-        setError(null);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith("image/")) {
-      // Validate file size (5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setError("File size must be less than 5MB");
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCategory({ ...category, image: reader.result as string });
-        setError(null);
-      };
-      reader.readAsDataURL(file);
-    }
+    const files = Array.from(e.dataTransfer?.files ?? []).slice(0, 1);
+    await processFiles(files, {
+      maxSize: 5 * 1024 * 1024,
+      allowedTypes: ["image/"],
+      onError: (message) => setError("image", { message }),
+      onSuccess: ([url]) => {
+        setValue("image", url, { shouldValidate: true });
+        clearErrors("image");
+      },
+    });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Validate category name
-    if (!category.name || category.name.trim() === "") {
-      setError("Category name is required");
-      return;
-    }
-
-    // Validate image presence
-    if (!category.image || category.image.trim() === "") {
-      setError("Category image is required");
-      return;
-    }
+  const onSubmit = (formData: TCategoryInput) => {
+    setSubmitting(true);
+    clearErrors();
 
     // submit logic here
-    console.log("Submitting category:", category);
-    dispatch(actAddCategory(category))
+    console.log("Submitting category:", formData);
+    dispatch(actAddCategory(formData))
       .unwrap()
       .then(() => {
-        setError(null);
         onClose();
       })
-      .catch((error) => {
-        setError(error.message || "Failed to add category");
+      .catch((err) => {
+        const errorMessage =
+          err instanceof Error ? err.message : "An unexpected error occurred";
+
+        setError("root", {
+          type: "manual",
+          message: errorMessage,
+        });
+      })
+      .finally(() => {
+        setSubmitting(false);
       });
   };
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   return {
-    category,
-    error,
-    handleChange,
     handleFileChange,
     handleDrop,
     handleSubmit,
     fileInputRef,
-    setCategory,
+    register,
+    formErrors: errors,
+    onSubmit,
+    getValues,
+    submitting,
+    isActive,
   };
 };
 

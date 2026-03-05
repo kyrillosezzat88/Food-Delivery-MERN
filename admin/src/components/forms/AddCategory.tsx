@@ -3,7 +3,7 @@ import {
   FormActions,
   FormCheckBox,
   FormField,
-  FormSingleImage,
+  FormUpload,
 } from "@components/forms";
 
 interface AddCategoryProps {
@@ -13,7 +13,6 @@ interface AddCategoryProps {
 const AddCategory = ({ onClose }: AddCategoryProps) => {
   const {
     handleFileChange,
-    handleDrop,
     handleSubmit,
     fileInputRef,
     register,
@@ -22,6 +21,7 @@ const AddCategory = ({ onClose }: AddCategoryProps) => {
     getValues,
     submitting,
     isActive,
+    setValue,
   } = useAddCategory({ onClose });
 
   return (
@@ -45,17 +45,17 @@ const AddCategory = ({ onClose }: AddCategoryProps) => {
         error={formErrors.name?.message}
       />
 
-      <FormSingleImage
+      <FormUpload
         formErrors={formErrors}
         getValues={getValues}
-        handleDrop={handleDrop}
         handleFileChange={handleFileChange}
         submitting={submitting}
         fileInputRef={fileInputRef}
-        removeImage={() => {}}
-        imageFieldName="image"
+        removeImage={() => setValue("image", [], { shouldValidate: true })}
+        FieldName="image"
+        type="single"
+        formName="Category"
       />
-
       <div className="flex items-center justify-between">
         <FormCheckBox
           name="active"

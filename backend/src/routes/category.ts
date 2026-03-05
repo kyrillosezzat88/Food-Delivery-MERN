@@ -10,13 +10,15 @@ import {
 import { adminJwtMiddleware } from "../middleware/adminJwt.js";
 import { paginate } from "../middleware/pagination.js";
 import { Category } from "../modules/category.js";
+import uploadImage from "../middleware/uploadImage.js";
 
 const categoryRouter = Router();
 
 categoryRouter.post(
   "/",
   adminJwtMiddleware,
-  validate(categorySchema),
+  // validate(categorySchema),
+  uploadImage.single("image"),
   createCategoryController,
 );
 

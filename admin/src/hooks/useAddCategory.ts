@@ -8,7 +8,6 @@ import {
   categorySchema,
   type TCategoryInput,
 } from "../validation/categoryValidation";
-import { processFiles } from "@utils/uploadImages";
 
 const useAddCategory = ({ onClose }: { onClose: () => void }) => {
   const dispatch = useAppDispatch();
@@ -30,30 +29,8 @@ const useAddCategory = ({ onClose }: { onClose: () => void }) => {
   const isActive = watch("active");
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []).slice(0, 1);
-    await processFiles(files, {
-      maxSize: 5 * 1024 * 1024,
-      allowedTypes: ["image/"],
-      onError: (message) => setError("image", { message }),
-      onSuccess: ([url]) => {
-        setValue("image", url, { shouldValidate: true });
-        clearErrors("image");
-      },
-    });
-  };
-
-  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const files = Array.from(e.dataTransfer?.files ?? []).slice(0, 1);
-    await processFiles(files, {
-      maxSize: 5 * 1024 * 1024,
-      allowedTypes: ["image/"],
-      onError: (message) => setError("image", { message }),
-      onSuccess: ([url]) => {
-        setValue("image", url, { shouldValidate: true });
-        clearErrors("image");
-      },
-    });
+    const file = Array.from(e.target.files ?? []).slice(0, 1)[0];
+    setValue("image", file, { shouldValidate: true });
   };
 
   const onSubmit = (formData: TCategoryInput) => {
@@ -85,7 +62,6 @@ const useAddCategory = ({ onClose }: { onClose: () => void }) => {
 
   return {
     handleFileChange,
-    handleDrop,
     handleSubmit,
     fileInputRef,
     register,
@@ -94,6 +70,9 @@ const useAddCategory = ({ onClose }: { onClose: () => void }) => {
     getValues,
     submitting,
     isActive,
+    setValue,
+    clearErrors,
+    setError,
   };
 };
 

@@ -4,14 +4,14 @@ export interface CategoryDocument extends Document {
   name: string;
   description?: string;
   createdAt: Date;
-  ImageUrl?: string;
+  image?: string;
 }
 
 const categorySchema = new Schema<CategoryDocument>({
   name: { type: String, required: true, unique: true },
   description: { type: String },
   createdAt: { type: Date, default: Date.now },
-  ImageUrl: { type: String },
+  image: { type: String },
 });
 
 export const Category = model<CategoryDocument>("Category", categorySchema);

@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { Product } from "../modules/product.js";
+import { cloudinaryImageUploadMethod } from "../helpers/uploadImageMethod.js";
 
 export const CreateProductController = async (req: Request, res: Response) => {
   try {
@@ -8,8 +9,30 @@ export const CreateProductController = async (req: Request, res: Response) => {
     if (existingProduct) {
       return res.status(400).json({ message: "Product already exists" });
     }
-    const newProduct = new Product(req.body);
+    let mainImage;
+    let gallery: string[] = [];
+
+    const files = req.files as { [key: string]: { path: string }[] };
+
+    if (files?.mainImage?.[0]) {
+      const { path } = files.mainImage[0];
+      mainImage = await cloudinaryImageUploadMethod(path);
+    }
+
+    if (files?.gallery?.length) {
+      for (const file of files.gallery) {
+        const newPath = await cloudinaryImageUploadMethod(file.path);
+        gallery.push(newPath);
+      }
+    }
+    const newProduct = new Product({
+      ...req.body,
+      mainImage: mainImage,
+      gallery: gallery,
+    });
+
     await newProduct.save();
+
     return res.status(201).json({
       message: "Product created successfully",
       product: newProduct,
@@ -70,7 +93,24 @@ export const DeleteProductController = async (req: Request, res: Response) => {
 };
 
 export const UpdateProductController = async (req: Request, res: Response) => {
+  const files = req.files as { [key: string]: { path: string }[] };
   try {
+    let mainImage;
+    let gallery = [];
+    // upload main image
+    if (files?.mainImage?.[0]) {
+      const { path } = files.mainImage[0];
+      mainImage = await cloudinaryImageUploadMethod(path);
+    }
+
+    //upload gallery
+
+    if (files?.gallery?.length) {
+      for (const file of files.gallery) {
+        const newPath = await cloudinaryImageUploadMethod(file.path);
+        gallery.push(newPath);
+      }
+    }
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     }).populate("category");

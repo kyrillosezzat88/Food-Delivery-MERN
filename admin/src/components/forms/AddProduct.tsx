@@ -2,9 +2,9 @@ import { useAddProduct } from "@hooks";
 import {
   FormField,
   FormSelect,
-  FormGallery,
   FormCheckBox,
   FormActions,
+  FormUpload,
 } from "@components/forms";
 
 interface AddProductProps {
@@ -15,7 +15,6 @@ const AddProduct = ({ onClose }: AddProductProps) => {
   const {
     formErrors,
     handleFileChange,
-    handleDrop,
     handleSubmit,
     fileInputRef,
     categories,
@@ -27,15 +26,16 @@ const AddProduct = ({ onClose }: AddProductProps) => {
     removeImage,
     submitting,
     isActive,
+    error,
   } = useAddProduct({ onClose });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Error Alert */}
-      {formErrors.root && (
+      {(formErrors.root || error) && (
         <div className="p-3 rounded-lg bg-red-50 border border-red-200">
           <p className="text-red-700 text-sm font-medium">
-            {formErrors.root.message}
+            {formErrors.root?.message || error}
           </p>
         </div>
       )}
@@ -88,15 +88,16 @@ const AddProduct = ({ onClose }: AddProductProps) => {
         tag="textarea"
       />
 
-      <FormGallery
+      <FormUpload
         formErrors={formErrors}
         getValues={getValues}
-        handleDrop={handleDrop}
         handleFileChange={handleFileChange}
         submitting={submitting}
         fileInputRef={fileInputRef}
         removeImage={removeImage}
-        galleryFieldName="gallery"
+        FieldName="gallery"
+        type="multi"
+        formName="Product"
       />
 
       <div className="flex items-center justify-between">

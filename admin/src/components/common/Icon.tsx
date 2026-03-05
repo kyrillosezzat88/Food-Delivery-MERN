@@ -16,6 +16,8 @@ import {
   SettingsIcon,
   TrashIcon,
   UploadIcon,
+  CloseIcon,
+  EditCircleIcon,
 } from "@icons";
 
 const iconMap = {
@@ -35,6 +37,8 @@ const iconMap = {
   ArrowLeftIcon,
   ArrowRightIcon,
   UploadIcon,
+  CloseIcon,
+  EditCircleIcon,
 } as const;
 
 type IconName = keyof typeof iconMap;

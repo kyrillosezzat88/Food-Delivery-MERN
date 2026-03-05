@@ -5,6 +5,29 @@ export const productSchema = z.object({
   description: z.string().min(1, "Product description is required"),
   price: z.number().min(0, "Price must be a positive number"),
   category: z.string().min(3, "Category is required"),
-  mainImage: z.string().url("Invalid image URL").optional(),
-  gallery: z.array(z.url("Invalid image URL")).optional(),
+  mainImage: z
+    .instanceof(File, { message: "Main image is required" })
+    .refine((file) => file.size > 0, "Image file is required")
+    .refine(
+      (file) =>
+        ["image/png", "image/jpeg", "image/jpg", "image/webp"].includes(
+          file.type,
+        ),
+      "Invalid image type",
+    )
+    .optional(),
+  gallery: z
+    .array(
+      z
+        .instanceof(File, { message: "Invalid file" })
+        .refine((file) => file.size > 0, "Image file is required")
+        .refine(
+          (file) =>
+            ["image/png", "image/jpeg", "image/jpg", "image/webp"].includes(
+              file.type,
+            ),
+          "Invalid image type",
+        ),
+    )
+    .optional(),
 });

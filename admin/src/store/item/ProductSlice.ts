@@ -3,6 +3,7 @@ import type { TProduct, TLoading } from "@types";
 import actGetProducts from "./actions/actGetProducts";
 import actAddProduct from "./actions/actAddProduct";
 import actDeleteProduct from "./actions/actDeleteProduct";
+import actDeleteCategory from "@store/category/actions/actDeleteCategory";
 
 type TInitState = {
   products: TProduct[];
@@ -65,6 +66,18 @@ const productSlice = createSlice({
     builder.addCase(actDeleteProduct.rejected, (state, action) => {
       state.loading = "failed";
       state.error = action.payload as string;
+    });
+    // delete products when category deleted
+    builder.addCase(actDeleteCategory.pending, (state) => {
+      state.loading = "pending";
+      state.error = null;
+    });
+    builder.addCase(actDeleteCategory.fulfilled, (state, action) => {
+      state.loading = "succeeded";
+      state.products = state.products.filter(
+        (pro) => pro.category !== action.payload.category._id,
+      );
+      state.error = null;
     });
   },
 });

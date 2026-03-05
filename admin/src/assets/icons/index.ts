@@ -14,3 +14,5 @@ export { default as EditIcon } from "./edit.svg?react";
 export { default as ArrowLeftIcon } from "./arrow-left.svg?react";
 export { default as ArrowRightIcon } from "./arrow-right.svg?react";
 export { default as UploadIcon } from "./upload.svg?react";
+export { default as CloseIcon } from "./close.svg?react";
+export { default as EditCircleIcon } from "./edit-circle.svg?react";

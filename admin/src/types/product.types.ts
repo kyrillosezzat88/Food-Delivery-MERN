@@ -1,12 +1,12 @@
 export type TProduct = {
-  _id: string;
+  _id?: string;
   name: string;
-  mainImage: string;
-  gallery?: string[];
+  mainImage: string | File;
+  gallery?: (string | File)[];
   description: string;
-  count: number;
+  count?: number;
   price: number;
   category: string | null;
-  createdAt: string;
+  createdAt?: string;
   active: boolean;
 };

@@ -9,13 +9,18 @@ import {
   UpdateProductController,
 } from "../controllers/product.js";
 import { adminJwtMiddleware } from "../middleware/adminJwt.js";
+import uploadImages from "../middleware/uploadImage.js";
 
 const productRouter = Router();
 
 productRouter.post(
   "/",
   adminJwtMiddleware,
-  validate(productSchema),
+  // validate(productSchema),
+  uploadImages.fields([
+    { name: "mainImage" },
+    { name: "gallery", maxCount: 10 },
+  ]),
   CreateProductController,
 );
 

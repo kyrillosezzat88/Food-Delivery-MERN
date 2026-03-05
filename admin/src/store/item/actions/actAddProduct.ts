@@ -11,10 +11,23 @@ type TResponse = {
 const actAddProduct = createAsyncThunk(
   "products/addProduct",
   async (product: TProduct, { rejectWithValue }) => {
+    console.log({ product });
+    const formData = new FormData();
+    for (let key in product) {
+      if (key === "gallery") {
+        for (let img of product.gallery) {
+          formData.append("gallery", img);
+        }
+      } else {
+        formData.append(key, product[key]);
+      }
+    }
     try {
-      const newItem = await axios.post<TResponse>("/products", product);
-      console.log("New product added:", newItem);
-      return newItem.data.product;
+      const res = await axios.post<TResponse>("/products", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log(res.data);
+      return res.data.product;
     } catch (error) {
       return rejectWithValue(axiosErrorHandler(error));
     }

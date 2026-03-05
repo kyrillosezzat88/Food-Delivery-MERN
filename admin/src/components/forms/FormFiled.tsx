@@ -44,7 +44,7 @@ const FormFiled = <T extends FieldValues>({
           autoFocus
           type={type}
           disabled={submitting}
-          {...register(name)} // 👈 dynamic field
+          {...register(name)}
           className="block w-full rounded-xl p-3 border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
           placeholder={placeholder}
           aria-label={ariaLabel}

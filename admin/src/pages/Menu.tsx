@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { actGetCategories } from "@store/category/categorySlice";
 import { actGetProducts } from "@store/item/ProductSlice";
+import actDeleteCategory from "@store/category/actions/actDeleteCategory";
 
 const Menu = () => {
   const [openAddCategoryModal, setOpenAddCategoryModal] = useState(false);
@@ -29,6 +30,7 @@ const Menu = () => {
   const addItemModal = (status: boolean) => {
     setOpenAddItemModal(status);
   };
+
   useEffect(() => {
     dispatch(actGetCategories());
     dispatch(actGetProducts());
@@ -52,7 +54,7 @@ const Menu = () => {
       </Modal>
 
       {/* Categories row */}
-      <div className="flex gap-4 overflow-x-auto pb-2">
+      <div className="flex gap-4 overflow-x-auto py-2 ">
         <button
           onClick={() => addCategoryModal(true)}
           className="flex flex-col items-center justify-center w-28 h-28 rounded-2xl border border-dashed border-primary/50 bg-primary/5 text-xs font-medium text-gray-700 shrink-0"

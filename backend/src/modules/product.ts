@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema({
     ref: "Category",
     required: true,
   },
-  mainImage: { type: String, required: true },
+  mainImage: { type: String },
   gallery: [{ type: String }],
   createdAt: { type: Date, default: Date.now },
 });

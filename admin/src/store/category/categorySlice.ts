@@ -2,11 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { TCategory, TLoading } from "@types";
 import actGetCategories from "./actions/actGetCategories";
 import actAddCategory from "./actions/actAddCategory";
+import actDeleteCategory from "./actions/actDeleteCategory";
 
 type TCategories = {
-  TotalPages: number;
-  TotalRecords: number;
   currentPage: number;
+  limit: number;
+  TotalRecords: number;
+  totalPages: number;
   data: TCategory[];
 };
 
@@ -15,9 +17,11 @@ type TInitialState = {
   loading: TLoading;
   error: string | null;
 };
+
 const initialState: TInitialState = {
   categories: {
-    TotalPages: 0,
+    totalPages: 0,
+    limit: 10,
     TotalRecords: 0,
     currentPage: 0,
     data: [],
@@ -25,6 +29,7 @@ const initialState: TInitialState = {
   loading: "idle",
   error: null,
 };
+
 const categorySlice = createSlice({
   name: "category",
   initialState,
@@ -35,21 +40,25 @@ const categorySlice = createSlice({
       state.categories = initialState.categories;
       state.error = null;
     });
+
     builder.addCase(actGetCategories.fulfilled, (state, action) => {
       state.loading = "succeeded";
       state.categories = action.payload;
       state.error = null;
     });
+
     builder.addCase(actGetCategories.rejected, (state, action) => {
       state.loading = "failed";
       state.categories = initialState.categories;
       state.error = action.error.message || "Failed to fetch categories";
     });
+
     // add category
     builder.addCase(actAddCategory.pending, (state) => {
       state.loading = "pending";
       state.error = null;
     });
+
     builder.addCase(actAddCategory.fulfilled, (state, action) => {
       state.loading = "succeeded";
       state.categories.data = [
@@ -59,9 +68,30 @@ const categorySlice = createSlice({
       state.categories.TotalRecords += 1;
       state.error = null;
     });
+
     builder.addCase(actAddCategory.rejected, (state, action) => {
       state.loading = "failed";
       state.error = action.error.message || "Failed to add category";
+    });
+
+    //delete category
+    builder.addCase(actDeleteCategory.pending, (state) => {
+      state.loading = "pending";
+      state.error = null;
+    });
+
+    builder.addCase(actDeleteCategory.fulfilled, (state, action) => {
+      const categoryId = action.payload.category._id;
+
+      state.loading = "succeeded";
+      state.error = null;
+      state.categories.data = state.categories.data.filter(
+        (cat) => cat._id !== categoryId,
+      );
+    });
+    builder.addCase(actDeleteCategory.rejected, (state, action) => {
+      state.loading = "failed";
+      state.error = action.error.message as string;
     });
   },
 });

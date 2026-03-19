@@ -100,9 +100,24 @@ export const deleteCategoryController = async (req: Request, res: Response) => {
 };
 export const updateCategoryController = async (req: Request, res: Response) => {
   try {
-    const category = await Category.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    const image = req.file;
+    let categoryImage;
+    if (image) {
+      categoryImage = await cloudinary.uploader.upload(image.path, {
+        folder: "categories",
+        public_id: `${Date.now()}`,
+      });
+    }
+    const category = await Category.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...req.body,
+        image: categoryImage ? categoryImage.secure_url : req.body.image,
+      },
+      {
+        new: true,
+      },
+    );
     if (!category) {
       return res
         .status(404)

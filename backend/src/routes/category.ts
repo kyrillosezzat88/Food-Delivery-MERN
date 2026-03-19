@@ -25,7 +25,8 @@ categoryRouter.post(
 categoryRouter.put(
   "/:id",
   adminJwtMiddleware,
-  validate(categorySchema),
+  // validate(categorySchema),
+  uploadImage.single("image"),
   updateCategoryController,
 );
 

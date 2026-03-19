@@ -5,12 +5,15 @@ import {
   FormField,
   FormUpload,
 } from "@components/forms";
+import type { TCategory } from "@types";
+import { useEffect } from "react";
 
 interface AddCategoryProps {
   onClose: () => void;
+  category?: TCategory | null;
 }
 
-const AddCategory = ({ onClose }: AddCategoryProps) => {
+const AddCategory = ({ onClose, category }: AddCategoryProps) => {
   const {
     handleFileChange,
     handleSubmit,
@@ -22,7 +25,19 @@ const AddCategory = ({ onClose }: AddCategoryProps) => {
     submitting,
     isActive,
     setValue,
+    setEditing,
   } = useAddCategory({ onClose });
+
+  useEffect(() => {
+    if (!category) return;
+    setEditing(true);
+    Object.keys(category).forEach((key) => {
+      setValue(
+        key as keyof typeof category,
+        category[key as keyof typeof category],
+      );
+    });
+  }, [category]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -51,7 +66,7 @@ const AddCategory = ({ onClose }: AddCategoryProps) => {
         handleFileChange={handleFileChange}
         submitting={submitting}
         fileInputRef={fileInputRef}
-        removeImage={() => setValue("image", [], { shouldValidate: true })}
+        removeImage={() => setValue("image", "", { shouldValidate: true })}
         FieldName="image"
         type="single"
         formName="Category"

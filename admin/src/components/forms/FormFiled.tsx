@@ -11,6 +11,7 @@ interface IFormFiledProps<T extends FieldValues> {
   register: UseFormRegister<T>;
   tag?: "input" | "textarea";
   type?: React.HTMLInputTypeAttribute;
+  value?: string;
 }
 
 const FormFiled = <T extends FieldValues>({
@@ -24,6 +25,7 @@ const FormFiled = <T extends FieldValues>({
   ariaLabel,
   tag = "input",
   type = "text",
+  value,
 }: IFormFiledProps<T>) => {
   return (
     <div>
@@ -48,6 +50,7 @@ const FormFiled = <T extends FieldValues>({
           className="block w-full rounded-xl p-3 border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
           placeholder={placeholder}
           aria-label={ariaLabel}
+          defaultValue={value}
         />
       )}
 

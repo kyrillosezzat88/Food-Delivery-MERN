@@ -3,6 +3,7 @@ import type { TCategory, TLoading } from "@types";
 import actGetCategories from "./actions/actGetCategories";
 import actAddCategory from "./actions/actAddCategory";
 import actDeleteCategory from "./actions/actDeleteCategory";
+import actEditCategory from "./actions/actEditCategory";
 
 type TCategories = {
   currentPage: number;
@@ -93,9 +94,26 @@ const categorySlice = createSlice({
       state.loading = "failed";
       state.error = action.error.message as string;
     });
+    builder.addCase(actEditCategory.pending, (state) => {
+      state.loading = "pending";
+      state.error = null;
+    });
+    builder.addCase(actEditCategory.fulfilled, (state, action) => {
+      const categoryID = action.payload.category._id;
+      state.loading = "succeeded";
+      state.error = null;
+      state.categories.data = state.categories.data.map((cat) =>
+        cat._id === categoryID ? action.payload.category : cat,
+      );
+    });
+
+    builder.addCase(actEditCategory.rejected, (state, action) => {
+      state.loading = "failed";
+      state.error = action.error.message as string;
+    });
   },
 });
 
-export { actGetCategories, actAddCategory };
+export { actGetCategories, actAddCategory, actEditCategory };
 
 export default categorySlice.reducer;

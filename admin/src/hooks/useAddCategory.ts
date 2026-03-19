@@ -1,9 +1,10 @@
-import { actAddCategory } from "@store/category/categorySlice";
+import { actAddCategory, actEditCategory } from "@store/category/categorySlice";
 import { useAppDispatch } from "@store/hooks";
 import type { TCategory } from "@types";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "react-toastify";
 import {
   categorySchema,
   type TCategoryInput,
@@ -12,7 +13,7 @@ import {
 const useAddCategory = ({ onClose }: { onClose: () => void }) => {
   const dispatch = useAppDispatch();
   const [submitting, setSubmitting] = useState(false);
-
+  const [editing, setEditing] = useState(false);
   const {
     register,
     handleSubmit,
@@ -36,26 +37,35 @@ const useAddCategory = ({ onClose }: { onClose: () => void }) => {
   const onSubmit = (formData: TCategoryInput) => {
     setSubmitting(true);
     clearErrors();
-
-    // submit logic here
-    console.log("Submitting category:", formData);
-    dispatch(actAddCategory(formData))
-      .unwrap()
-      .then(() => {
-        onClose();
-      })
-      .catch((err) => {
-        const errorMessage =
-          err instanceof Error ? err.message : "An unexpected error occurred";
-
-        setError("root", {
-          type: "manual",
-          message: errorMessage,
+    console.log(formData);
+    if (editing) {
+      dispatch(actEditCategory(formData))
+        .then(() => onClose())
+        .finally(() => {
+          setSubmitting(false);
+          toast.success(`${formData.name} edited successfully `);
         });
-      })
-      .finally(() => {
-        setSubmitting(false);
-      });
+    } else {
+      // submit logic here
+      dispatch(actAddCategory(formData))
+        .unwrap()
+        .then(() => {
+          onClose();
+        })
+        .catch((err) => {
+          const errorMessage =
+            err instanceof Error ? err.message : "An unexpected error occurred";
+
+          setError("root", {
+            type: "manual",
+            message: errorMessage,
+          });
+        })
+        .finally(() => {
+          setSubmitting(false);
+          toast.success(`${formData.name} created successfully `);
+        });
+    }
   };
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -73,6 +83,7 @@ const useAddCategory = ({ onClose }: { onClose: () => void }) => {
     setValue,
     clearErrors,
     setError,
+    setEditing,
   };
 };
 

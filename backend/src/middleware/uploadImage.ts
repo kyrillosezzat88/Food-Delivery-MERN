@@ -11,6 +11,7 @@ const FILE_TYPE_MAP: Record<string, string> = {
 // Better error handling + validation
 const storage: StorageEngine = multer.diskStorage({
   destination: (req: Request, file: Express.Multer.File, cb) => {
+    console.log(file);
     const isValid =
       !!FILE_TYPE_MAP[file.mimetype as keyof typeof FILE_TYPE_MAP];
 
@@ -20,7 +21,6 @@ const storage: StorageEngine = multer.diskStorage({
       );
       return cb(error, "");
     }
-    console.log("test");
     // Make sure the folder exists (you can also use `fs.mkdir` beforehand)
     cb(null, "public/uploads/");
   },

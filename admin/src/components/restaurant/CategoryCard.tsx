@@ -4,7 +4,18 @@ import { useAppDispatch, useAppSelector } from "@store/hooks";
 import type { TCategory } from "@types";
 import { useState } from "react";
 
-const CategoryCard = ({ _id, name, active, image }: TCategory) => {
+type CategoryCardProps = TCategory & {
+  editCategory: (category: TCategory) => void;
+};
+
+const CategoryCard = ({
+  _id,
+  name,
+  active,
+  image,
+  editCategory,
+}: CategoryCardProps) => {
+  const category = { _id, name, active, image };
   const { loading, error } = useAppSelector((state) => state.categories);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -44,7 +55,7 @@ const CategoryCard = ({ _id, name, active, image }: TCategory) => {
         <button
           type="button"
           className="absolute -top-2 -left-2 rounded-full w-6 h-6 cursor-pointer"
-          onClick={() => {}}
+          onClick={() => editCategory(category)}
         >
           <Icon name="EditCircleIcon" />
         </button>

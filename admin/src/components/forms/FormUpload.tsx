@@ -33,7 +33,6 @@ const FormUpload = <T extends FieldValues>({
   formName,
 }: TFormGallery<T>) => {
   const uploadedFiles = getValues(FieldName) as File | File[];
-
   return (
     <div>
       <label className="block text-sm font-semibold mb-2">

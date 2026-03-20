@@ -1,3 +1,5 @@
+import type { TCategory } from "./category.types";
+
 export type TProduct = {
   _id?: string;
   name: string;
@@ -6,7 +8,7 @@ export type TProduct = {
   description: string;
   count?: number;
   price: number;
-  category: string | null;
+  category: string | TCategory;
   createdAt?: string;
   active: boolean;
 };

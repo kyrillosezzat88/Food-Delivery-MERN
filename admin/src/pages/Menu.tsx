@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { actGetCategories } from "@store/category/categorySlice";
 import { actGetProducts } from "@store/item/ProductSlice";
-import type { TCategory } from "@types";
+import type { TCategory, TProduct } from "@types";
 
 const Menu = () => {
   const [openAddCategoryModal, setOpenAddCategoryModal] = useState(false);
@@ -13,6 +13,7 @@ const Menu = () => {
   const [selectedCategory, setSelectedCategory] = useState<TCategory | null>(
     null,
   );
+  const [selectedProduct, setSelectedProduct] = useState<TProduct | null>(null);
   const dispatch = useAppDispatch();
   const {
     categories,
@@ -38,9 +39,17 @@ const Menu = () => {
     setSelectedCategory(category);
     setOpenAddCategoryModal(true);
   };
+  const editProduct = (product: TProduct) => {
+    setSelectedProduct(product);
+    setOpenAddItemModal(true);
+  };
   const onCloseCategoryModal = () => {
     setOpenAddCategoryModal(false);
     setSelectedCategory(null);
+  };
+  const onCloseProductModal = () => {
+    setOpenAddItemModal(false);
+    setSelectedProduct(null);
   };
   useEffect(() => {
     dispatch(actGetCategories());
@@ -62,9 +71,9 @@ const Menu = () => {
       <Modal
         title="Add Item"
         isOpen={openAddItemModal}
-        onClose={() => addItemModal(false)}
+        onClose={onCloseProductModal}
       >
-        <AddProduct onClose={() => addItemModal(false)} />
+        <AddProduct product={selectedProduct} onClose={onCloseProductModal} />
       </Modal>
 
       {/* Categories row */}
@@ -99,7 +108,7 @@ const Menu = () => {
         </article>
 
         {products.map((product, index) => (
-          <FoodCard key={index} {...product} />
+          <FoodCard key={index} {...product} editProduct={editProduct} />
         ))}
       </div>
     </section>

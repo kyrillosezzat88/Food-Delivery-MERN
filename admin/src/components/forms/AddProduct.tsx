@@ -6,12 +6,15 @@ import {
   FormActions,
   FormUpload,
 } from "@components/forms";
+import { useEffect } from "react";
+import type { TProduct } from "@types";
 
 interface AddProductProps {
   onClose: () => void;
+  product?: TProduct | null;
 }
 
-const AddProduct = ({ onClose }: AddProductProps) => {
+const AddProduct = ({ onClose, product }: AddProductProps) => {
   const {
     formErrors,
     handleFileChange,
@@ -27,8 +30,26 @@ const AddProduct = ({ onClose }: AddProductProps) => {
     submitting,
     isActive,
     error,
+    setValue,
+    setEditing,
   } = useAddProduct({ onClose });
 
+  useEffect(() => {
+    if (!product) return;
+
+    console.log({ product });
+    setEditing(true);
+
+    Object.keys(product).forEach((key) => {
+      setValue(
+        key as keyof typeof product,
+        product[key as keyof typeof product],
+      );
+    });
+    if (product.category._id) {
+      setValue("category", product.category._id);
+    }
+  }, [product]);
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Error Alert */}

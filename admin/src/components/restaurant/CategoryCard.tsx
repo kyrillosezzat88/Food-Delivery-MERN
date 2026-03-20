@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "@store/hooks";
 import type { TCategory } from "@types";
 import { useState } from "react";
 
-type CategoryCardProps = TCategory & {
+type TCategoryCardProps = TCategory & {
   editCategory: (category: TCategory) => void;
 };
 
@@ -14,7 +14,7 @@ const CategoryCard = ({
   active,
   image,
   editCategory,
-}: CategoryCardProps) => {
+}: TCategoryCardProps) => {
   const category = { _id, name, active, image };
   const { loading, error } = useAppSelector((state) => state.categories);
   const [confirmDelete, setConfirmDelete] = useState(false);

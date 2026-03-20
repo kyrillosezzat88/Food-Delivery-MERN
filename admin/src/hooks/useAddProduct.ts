@@ -11,6 +11,7 @@ const useAddProduct = ({ onClose }: { onClose: () => void }) => {
   const [submitting, setSubmitting] = useState(false);
   const { error } = useAppSelector((state) => state.products);
   const dispatch = useAppDispatch();
+  const [editing, setEditing] = useState(false);
 
   const {
     register,
@@ -42,24 +43,30 @@ const useAddProduct = ({ onClose }: { onClose: () => void }) => {
   };
 
   const onSubmit = async (formData: TProductInput) => {
-    try {
-      setSubmitting(true);
-      clearErrors();
-      const productData: TProduct = {
-        ...formData,
-        mainImage: formData.gallery[0],
-        active: formData.active || false,
-      };
-      await dispatch(actAddProduct(productData));
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "An unexpected error occurred";
-      setError("root", {
-        type: "manual",
-        message: errorMessage,
-      });
-    } finally {
-      setSubmitting(false);
+    if (editing) {
+      console.log({ formData });
+      setEditing(false);
+    } else {
+      try {
+        setSubmitting(true);
+        clearErrors();
+        const productData: TProduct = {
+          ...formData,
+          mainImage: formData.gallery[0],
+          active: formData.active || false,
+        };
+        await dispatch(actAddProduct(productData));
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "An unexpected error occurred";
+        setError("root", {
+          type: "manual",
+          message: errorMessage,
+        });
+      } finally {
+        setSubmitting(false);
+        onClose();
+      }
     }
   };
 
@@ -88,6 +95,8 @@ const useAddProduct = ({ onClose }: { onClose: () => void }) => {
     removeImage,
     isActive,
     error,
+    setEditing,
+    setValue,
   };
 };
 

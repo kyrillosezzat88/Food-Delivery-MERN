@@ -6,20 +6,9 @@ export const productSchema = z.object({
   price: z.number().min(0, "Price must be a positive number"),
   category: z.string().min(3, "Category is required"),
   mainImage: z
-    .instanceof(File, { message: "Main image is required" })
-    .refine((file) => file.size > 0, "Image file is required")
-    .refine(
-      (file) =>
-        ["image/png", "image/jpeg", "image/jpg", "image/webp"].includes(
-          file.type,
-        ),
-      "Invalid image type",
-    )
-    .optional(),
-  gallery: z
-    .array(
+    .union([
       z
-        .instanceof(File, { message: "Invalid file" })
+        .instanceof(File)
         .refine((file) => file.size > 0, "Image file is required")
         .refine(
           (file) =>
@@ -28,6 +17,24 @@ export const productSchema = z.object({
             ),
           "Invalid image type",
         ),
+      z.string().url("Invalid image URL"),
+    ])
+    .optional(),
+  gallery: z
+    .array(
+      z.union([
+        z
+          .instanceof(File)
+          .refine((file) => file.size > 0, "Image file is required")
+          .refine(
+            (file) =>
+              ["image/png", "image/jpeg", "image/jpg", "image/webp"].includes(
+                file.type,
+              ),
+            "Invalid image type",
+          ),
+        z.string().url("Invalid image URL"),
+      ]),
     )
     .optional(),
 });

@@ -17,6 +17,7 @@ export default defineConfig({
       "@types": path.resolve(__dirname, "./src/types"),
       "@styles": path.resolve(__dirname, "./src/styles"),
       "@layouts": path.resolve(__dirname, "./src/layouts/index"),
+      "@skeletons": path.resolve(__dirname, "./src/components/skeletons/index"),
       "@utils": path.resolve(__dirname, "./src/utils"),
       "@services": path.resolve(__dirname, "./src/services"),
       "@validations": path.resolve(__dirname, "./src/validations/index"),

@@ -94,6 +94,7 @@ const AddProduct = ({ onClose, product }: AddProductProps) => {
           submitting={submitting}
           register={register}
           name="category"
+          loading={categoriesLoading}
         />
       </div>
 

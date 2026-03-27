@@ -6,6 +6,7 @@ import { productSchema } from "../validation/productValidation";
 import { actAddProduct } from "@store/item/ProductSlice";
 import type { TProductInput } from "../validation/productValidation";
 import type { TProduct } from "@types";
+import actEditProduct from "@store/item/actions/actEditProduct";
 
 const useAddProduct = ({ onClose }: { onClose: () => void }) => {
   const [submitting, setSubmitting] = useState(false);
@@ -43,30 +44,35 @@ const useAddProduct = ({ onClose }: { onClose: () => void }) => {
   };
 
   const onSubmit = async (formData: TProductInput) => {
-    if (editing) {
-      console.log({ formData });
-      setEditing(false);
-    } else {
-      try {
-        setSubmitting(true);
-        clearErrors();
-        const productData: TProduct = {
-          ...formData,
-          mainImage: formData.gallery[0],
-          active: formData.active || false,
-        };
+    setSubmitting(true);
+    clearErrors();
+
+    try {
+      const productData: TProduct = {
+        ...formData,
+        mainImage: formData.gallery?.[0],
+        active: formData.active ?? false,
+        ...(editing && { _id: getValues("_id") }),
+      };
+
+      if (editing) {
+        await dispatch(actEditProduct(productData));
+        setEditing(false);
+      } else {
         await dispatch(actAddProduct(productData));
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "An unexpected error occurred";
-        setError("root", {
-          type: "manual",
-          message: errorMessage,
-        });
-      } finally {
-        setSubmitting(false);
-        onClose();
       }
+
+      onClose();
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "An unexpected error occurred";
+
+      setError("root", {
+        type: "manual",
+        message: errorMessage,
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 

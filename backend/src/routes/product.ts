@@ -29,7 +29,10 @@ productRouter.get("/:id", GetProductByIdController);
 productRouter.put(
   "/:id",
   adminJwtMiddleware,
-  validate(productSchema),
+  uploadImages.fields([
+    { name: "mainImage" },
+    { name: "gallery", maxCount: 10 },
+  ]),
   UpdateProductController,
 );
 productRouter.delete("/:id", adminJwtMiddleware, DeleteProductController);

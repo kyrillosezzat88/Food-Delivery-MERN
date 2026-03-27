@@ -11,8 +11,8 @@ type TResponse = {
 const actAddProduct = createAsyncThunk(
   "products/addProduct",
   async (product: TProduct, { rejectWithValue }) => {
-    console.log({ product });
     const formData = new FormData();
+
     for (let key in product) {
       if (key === "gallery") {
         for (let img of product.gallery) {
@@ -22,6 +22,7 @@ const actAddProduct = createAsyncThunk(
         formData.append(key, product[key]);
       }
     }
+
     try {
       const res = await axios.post<TResponse>("/products", formData, {
         headers: { "Content-Type": "multipart/form-data" },

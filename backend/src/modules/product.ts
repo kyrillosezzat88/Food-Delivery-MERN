@@ -10,6 +10,8 @@ const productSchema = new mongoose.Schema({
   },
   mainImage: { type: String },
   gallery: [{ type: String }],
+  count: { type: Number, default: 0 },
+  active: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now },
 });
 

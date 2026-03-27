@@ -28,6 +28,7 @@
         "@types": ["src/types/index"],
         "@styles/*": ["src/styles/*"],
         "@layouts": ["src/layouts/index"],
+        "@skeleton": ["src/components/skeletons/index"],
         "@utils/*": ["src/utils/*"],
         "@services/*": ["src/services/*"],
         "@validations": ["src/validations/index"],

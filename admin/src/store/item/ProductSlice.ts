@@ -3,6 +3,7 @@ import type { TProduct, TLoading } from "@types";
 import actGetProducts from "./actions/actGetProducts";
 import actAddProduct from "./actions/actAddProduct";
 import actDeleteProduct from "./actions/actDeleteProduct";
+import actEditProduct from "./actions/actEditProduct";
 import actDeleteCategory from "@store/category/actions/actDeleteCategory";
 
 type TInitState = {
@@ -67,6 +68,25 @@ const productSlice = createSlice({
       state.loading = "failed";
       state.error = action.payload as string;
     });
+    //edit item
+    builder.addCase(actEditProduct.pending, (state) => {
+      state.loading = "pending";
+      state.error = null;
+    });
+    builder.addCase(actEditProduct.fulfilled, (state, action) => {
+      state.loading = "succeeded";
+      const index = state.products.findIndex(
+        (product) => product._id === action.payload._id,
+      );
+      if (index !== -1) {
+        state.products[index] = action.payload;
+      }
+      state.error = null;
+    });
+    builder.addCase(actEditProduct.rejected, (state, action) => {
+      state.loading = "failed";
+      state.error = action.payload as string;
+    });
     // delete products when category deleted
     builder.addCase(actDeleteCategory.pending, (state) => {
       state.loading = "pending";
@@ -81,5 +101,5 @@ const productSlice = createSlice({
     });
   },
 });
-export { actAddProduct, actGetProducts, actDeleteProduct };
+export { actAddProduct, actGetProducts, actDeleteProduct, actEditProduct };
 export default productSlice.reducer;

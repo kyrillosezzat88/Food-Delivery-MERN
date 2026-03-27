@@ -14,18 +14,21 @@ export const productSchema = z.object({
   active: z.boolean().optional(),
   gallery: z
     .array(
-      z
-        .instanceof(File)
-        .refine((file) => file.size > 0, "Image file is required")
-        .refine(
-          (file) =>
-            ["image/png", "image/jpeg", "image/jpg", "image/webp"].includes(
-              file.type,
-            ),
-          "Invalid image type",
-        ),
+      z.union([
+        z
+          .instanceof(File)
+          .refine((file) => file.size > 0, "Image file is required")
+          .refine(
+            (file) =>
+              ["image/png", "image/jpeg", "image/jpg", "image/webp"].includes(
+                file.type,
+              ),
+            "Invalid image type",
+          ),
+        z.string().min(1, "Image URL is required"),
+      ]),
     )
-    .nonempty("At least one image is required"),
+    .min(1, "At least one image is required"),
 });
 
 export type TProductInput = z.infer<typeof productSchema>;

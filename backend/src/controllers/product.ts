@@ -95,25 +95,39 @@ export const DeleteProductController = async (req: Request, res: Response) => {
 export const UpdateProductController = async (req: Request, res: Response) => {
   const files = req.files as { [key: string]: { path: string }[] };
   try {
-    let mainImage;
-    let gallery = [];
-    // upload main image
+    let mainImage = req.body.mainImage;
+    let gallery = req.body.gallery ? JSON.parse(req.body.gallery) : [];
+
+    // upload main image if it's a file
     if (files?.mainImage?.[0]) {
       const { path } = files.mainImage[0];
       mainImage = await cloudinaryImageUploadMethod(path);
     }
 
-    //upload gallery
-
+    //upload gallery if there are new files
     if (files?.gallery?.length) {
       for (const file of files.gallery) {
         const newPath = await cloudinaryImageUploadMethod(file.path);
         gallery.push(newPath);
       }
     }
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+
+    const updateData: any = {
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      category: req.body.category,
+      count: req.body.count,
+      active: req.body.active,
+    };
+
+    if (mainImage) updateData.mainImage = mainImage;
+    if (gallery.length > 0) updateData.gallery = gallery;
+
+    const product = await Product.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
     }).populate("category");
+
     if (!product) {
       return res
         .status(404)

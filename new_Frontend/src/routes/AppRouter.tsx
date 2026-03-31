@@ -1,4 +1,4 @@
-import { Cart, CompletedOrder, Home, Auth } from "@pages";
+import { Cart, CompletedOrder, Home, Auth, Profile } from "@pages";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 const router = createBrowserRouter([
@@ -18,6 +18,10 @@ const router = createBrowserRouter([
       {
         path: "/completed",
         element: <CompletedOrder />,
+      },
+      {
+        path: "/profile",
+        element: <Profile />,
       },
     ],
   },

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Logo from "@assets/images/logo.png";
 import {
   AuthFooter,
@@ -7,23 +7,37 @@ import {
   LoginForm,
   SignupForm,
   type AuthMode,
-  type LoginFormData,
+  type TLoginFormData,
   type SignupFormData,
 } from "@components/auth";
-
+import { useAppDispatch, useAppSelector } from "@store/hooks";
+import { actLogin, actRegister } from "@store/auth/authSlice";
+import { useNavigate } from "react-router-dom";
 const Auth = () => {
+  const dispatch = useAppDispatch();
+  const { token } = useAppSelector((state) => state.auth);
+  const navigate = useNavigate();
   const [mode, setMode] = useState<AuthMode>("login");
-
   const toggle = (m: AuthMode) => setMode(m);
 
-  const handleLogin = (data: LoginFormData) => {
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (token || storedToken) {
+      navigate("/");
+    }
+  }, [token, navigate]);
+
+  const handleLogin = (data: TLoginFormData) => {
     console.log("Login:", data);
-    // wire up your login logic here
+    dispatch(actLogin(data)).then((res) => {
+      if (res.payload.user.isVerified) {
+        navigate("/");
+      }
+    });
   };
 
   const handleSignup = (data: SignupFormData) => {
-    console.log("Signup:", data);
-    // wire up your signup logic here
+    dispatch(actRegister(data));
   };
 
   return (

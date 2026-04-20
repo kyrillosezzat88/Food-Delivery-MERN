@@ -1,6 +1,8 @@
-import { Cart, CompletedOrder, Home, Auth, Profile } from "@pages";
+import { Cart, CompletedOrder, Home, Auth, Profile, VerifyEmail } from "@pages";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
+import PrivateLayout from "../layouts/PrivateLayout";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -8,20 +10,25 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        path: "/",
         element: <Home />,
       },
+      // ── Protected routes ──
       {
-        path: "/cart",
-        element: <Cart />,
-      },
-      {
-        path: "/completed",
-        element: <CompletedOrder />,
-      },
-      {
-        path: "/profile",
-        element: <Profile />,
+        element: <PrivateLayout />,
+        children: [
+          {
+            path: "/cart",
+            element: <Cart />,
+          },
+          {
+            path: "/completed",
+            element: <CompletedOrder />,
+          },
+          {
+            path: "/profile",
+            element: <Profile />,
+          },
+        ],
       },
     ],
   },
@@ -29,9 +36,12 @@ const router = createBrowserRouter([
     path: "/auth",
     element: <Auth />,
   },
+  {
+    path: "/verify-email",
+    element: <VerifyEmail />,
+  },
 ]);
-const AppRouter = () => {
-  return <RouterProvider router={router} />;
-};
+
+const AppRouter = () => <RouterProvider router={router} />;
 
 export default AppRouter;

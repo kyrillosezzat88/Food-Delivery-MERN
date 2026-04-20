@@ -15,6 +15,8 @@ const orderSchema = new mongoose.Schema({
   paymentMethod: { type: String, required: true },
   deliveryAddress: { type: String, required: true },
   phoneNumber: { type: String, required: true },
+  address: { type: String, required: true },
+  additionalNotes: { type: String },
 });
 
 export const Order = mongoose.model("Order", orderSchema);

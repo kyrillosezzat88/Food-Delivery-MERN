@@ -1,42 +1,30 @@
+import { useAppSelector } from "@store/hooks";
+import type { TUser } from "@types";
 import { useState } from "react";
 
-interface SignupFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  agree: boolean;
-}
-
 interface SignupFormProps {
-  onSubmit: (data: SignupFormData) => void;
+  onSubmit: (data: TUser) => void;
 }
 
 const inputClass =
   "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 outline-none focus:border-tomato transition-colors placeholder:text-gray-300";
 
 const SignupForm = ({ onSubmit }: SignupFormProps) => {
-  const [form, setForm] = useState<SignupFormData>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    agree: false,
-  });
+  const { loading, error } = useAppSelector((state) => state.auth);
+  const [form, setForm] = useState<TUser>({} as TUser);
   const [showPassword, setShowPassword] = useState(false);
 
   const set =
-    (field: keyof SignupFormData) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    (field: keyof TUser) => (e: React.ChangeEvent<HTMLInputElement>) =>
       setForm({
         ...form,
         [field]: field === "agree" ? e.target.checked : e.target.value,
       });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(form);
+    await onSubmit(form);
+    setForm({} as TUser);
   };
 
   const passwordMatch = form.confirmPassword
@@ -45,13 +33,12 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      {/* Name */}
       <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1.5">
           <label className="text-xs text-gray-500">First name</label>
           <input
             placeholder="John"
-            value={form.firstName}
+            value={form.firstName ?? ""}
             onChange={set("firstName")}
             className={inputClass}
             required
@@ -61,7 +48,7 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
           <label className="text-xs text-gray-500">Last name</label>
           <input
             placeholder="Doe"
-            value={form.lastName}
+            value={form.lastName ?? ""}
             onChange={set("lastName")}
             className={inputClass}
             required
@@ -69,27 +56,25 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
         </div>
       </div>
 
-      {/* Email */}
       <div className="flex flex-col gap-1.5">
         <label className="text-xs text-gray-500">Email address</label>
         <input
           type="email"
           placeholder="john@example.com"
-          value={form.email}
+          value={form.email ?? ""}
           onChange={set("email")}
           className={inputClass}
           required
         />
       </div>
 
-      {/* Password */}
       <div className="flex flex-col gap-1.5">
         <label className="text-xs text-gray-500">Password</label>
         <div className="relative">
           <input
             type={showPassword ? "text" : "password"}
             placeholder="••••••••"
-            value={form.password}
+            value={form.password ?? ""}
             onChange={set("password")}
             className={`${inputClass} pr-12`}
             required
@@ -104,14 +89,13 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
         </div>
       </div>
 
-      {/* Confirm Password */}
       <div className="flex flex-col gap-1.5">
         <label className="text-xs text-gray-500">Confirm password</label>
         <div className="relative">
           <input
             type={showPassword ? "text" : "password"}
             placeholder="••••••••"
-            value={form.confirmPassword}
+            value={form.confirmPassword ?? ""}
             onChange={set("confirmPassword")}
             className={`${inputClass} pr-20`}
             required
@@ -128,7 +112,6 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
         </div>
       </div>
 
-      {/* Terms */}
       <label className="flex items-start gap-3 cursor-pointer">
         <input
           type="checkbox"
@@ -138,11 +121,11 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
           required
         />
         <span className="text-xs text-gray-500 leading-relaxed">
-          I agree to the{" "}
+          I agree to the
           <span className="text-tomato hover:underline cursor-pointer">
             Terms of Service
-          </span>{" "}
-          and{" "}
+          </span>
+          and
           <span className="text-tomato hover:underline cursor-pointer">
             Privacy Policy
           </span>
@@ -151,13 +134,24 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
 
       <button
         type="submit"
-        className="w-full bg-tomato text-white py-3 rounded-full text-sm font-medium hover:bg-tomato/90 transition-colors mt-1"
+        className="w-full cursor-pointer bg-primary text-white py-3 rounded-full text-sm font-medium hover:bg-tomato/90 transition-colors mt-1"
       >
-        Create Account
+        {loading === "pending" ? "Creating account..." : "Create Account"}
       </button>
+      {error && (
+        <p className="text-sm text-red-500 mt-2 font-bold bg-red-100 p-4 rounded text-center">
+          {error}
+        </p>
+      )}
+      {loading === "succeeded" && (
+        <p className="text-sm text-green-500 mt-2 font-bold bg-green-100 p-4 rounded text-center">
+          Account created successfully please check your email to verify your
+          account.
+        </p>
+      )}
     </form>
   );
 };
 
 export default SignupForm;
-export type { SignupFormData };
+export type { TUser };

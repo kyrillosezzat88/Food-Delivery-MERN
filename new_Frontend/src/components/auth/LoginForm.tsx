@@ -1,28 +1,31 @@
+import { useAppSelector } from "@store/hooks";
 import { useState } from "react";
 
-interface LoginFormData {
+export type TLoginFormData = {
   email: string;
   password: string;
-}
+};
 
 interface LoginFormProps {
-  onSubmit: (data: LoginFormData) => void;
+  onSubmit: (data: TLoginFormData) => void;
 }
 
 const inputClass =
   "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 outline-none focus:border-tomato transition-colors placeholder:text-gray-300";
 
 const LoginForm = ({ onSubmit }: LoginFormProps) => {
-  const [form, setForm] = useState<LoginFormData>({ email: "", password: "" });
+  const { loading, error, user } = useAppSelector((state) => state.auth);
+  const [form, setForm] = useState<TLoginFormData>({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
 
   const set =
-    (field: keyof LoginFormData) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    (field: keyof TLoginFormData) => (e: React.ChangeEvent<HTMLInputElement>) =>
       setForm({ ...form, [field]: e.target.value });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(form);
+    await onSubmit(form);
+    setForm({ email: "", password: "" });
   };
 
   return (
@@ -67,13 +70,22 @@ const LoginForm = ({ onSubmit }: LoginFormProps) => {
 
       <button
         type="submit"
-        className="w-full bg-tomato text-white py-3 rounded-full text-sm font-medium hover:bg-tomato/90 transition-colors mt-1"
+        className="w-full bg-primary text-white py-3 rounded-full text-sm font-medium hover:bg-tomato/90 transition-colors mt-1"
       >
-        Sign In
+        {loading === "pending" ? "Signing in..." : "Sign In"}
       </button>
+      {error && (
+        <p className="text-sm text-red-500 mt-2 font-bold bg-red-100 p-4 rounded text-center">
+          {error}
+        </p>
+      )}
+      {user && !user.isVerified && (
+        <p className="text-sm text-yellow-600 mt-2 font-bold bg-yellow-100 p-4 rounded text-center">
+          Your email is not verified. Please check your inbox.
+        </p>
+      )}
     </form>
   );
 };
 
 export default LoginForm;
-export type { LoginFormData };

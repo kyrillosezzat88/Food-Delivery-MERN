@@ -11,7 +11,7 @@ const AuthFooter = ({ mode, onToggle }: AuthFooterProps) => {
       {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
       <button
         onClick={() => onToggle(mode === "login" ? "signup" : "login")}
-        className="text-tomato font-medium hover:underline"
+        className=" cursor-pointer text-tomato font-medium hover:underline"
       >
         {mode === "login" ? "Sign up" : "Sign in"}
       </button>

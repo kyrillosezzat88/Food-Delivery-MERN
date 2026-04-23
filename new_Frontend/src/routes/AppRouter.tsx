@@ -1,4 +1,5 @@
 import { Cart, CompletedOrder, Home, Auth, Profile, VerifyEmail } from "@pages";
+import { AuthCallback } from "@components/auth";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import PrivateLayout from "../layouts/PrivateLayout";
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
   {
     path: "/auth",
     element: <Auth />,
+  },
+  {
+    path: "/auth/callback",
+    element: <AuthCallback />,
   },
   {
     path: "/verify-email",

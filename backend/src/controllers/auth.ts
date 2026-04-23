@@ -123,3 +123,26 @@ export const VerifyEmailController = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Server error", error });
   }
 };
+
+// google auth controller
+export const googleCallback = async (req: Request, res: Response) => {
+  const user = req.user as any;
+  const token = JWT.sign(
+    { userId: user._id, isAdmin: user.isAdmin },
+    process.env.JWT_SECRET as string,
+    { expiresIn: "7d" },
+  );
+  const clientUrl = process.env.CLIENT_URL;
+  if (!clientUrl) {
+    return res.status(500).json({ message: "Missing CLIENT_URL in env" });
+  }
+  return res.redirect(`${clientUrl}/auth/callback?token=${token}`);
+};
+
+export const getCurrentUser = async (req: Request, res: Response) => {
+  const user = req.user;
+  if (!user) {
+    return res.status(401).json({ message: "User not found" });
+  }
+  return res.status(200).json({ user });
+};

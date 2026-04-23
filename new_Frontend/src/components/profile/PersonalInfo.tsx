@@ -1,28 +1,53 @@
-import { useState } from "react";
+import { FormField } from "@components/common";
+import { actUpdateUser } from "@store/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@store/hooks";
+import type { TUser } from "@types";
+import { useEffect, useEffectEvent, useState } from "react";
+import checkMark from "@assets/icons/checkMark.svg";
 
-const inputClass =
-  "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 outline-none focus:border-tomato transition-colors placeholder:text-gray-300";
+type TForm = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber?: string;
+  profileImage?: string;
+};
 
 const PersonalInfo = () => {
-  const [form, setForm] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john@example.com",
-    phone: "+1 234 567 8900",
-    bio: "",
-  });
+  const { user, loading, error } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const [form, setForm] = useState<TForm | null>(user);
   const [saved, setSaved] = useState(false);
 
-  const set =
-    (field: keyof typeof form) =>
+  const updateProfile = useEffectEvent((user: TUser) => {
+    setForm(user);
+  });
+  useEffect(() => {
+    if (user) {
+      updateProfile(user);
+    }
+  }, [user]);
+
+  const handleFieldChange =
+    (field: keyof TForm) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-      setForm({ ...form, [field]: e.target.value });
+      setForm((prev) => ({ ...prev, [field]: e.target.value }) as TForm);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    dispatch(actUpdateUser(form as TUser)).then(() => {
+      setSaved(true);
+    });
   };
+
+  const initials = form
+    ? `${form.firstName?.[0] || ""}${form.lastName?.[0] || ""}`.toUpperCase() ||
+      "U"
+    : "U";
+
+  if (!form) {
+    return <div>Loading...</div>; // Or a proper loading state
+  }
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100">
@@ -39,7 +64,17 @@ const PersonalInfo = () => {
         {/* Avatar Upload */}
         <div className="flex items-center gap-5">
           <div className="w-16 h-16 rounded-full bg-tomato/10 flex items-center justify-center flex-shrink-0">
-            <span className="text-xl font-medium text-tomato">JD</span>
+            {form.profileImage ? (
+              <img
+                src={form.profileImage}
+                alt="Profile"
+                className="w-full h-full rounded-full object-cover"
+              />
+            ) : (
+              <span className="text-xl font-medium text-tomato">
+                {initials}
+              </span>
+            )}
           </div>
           <div>
             <button
@@ -53,84 +88,54 @@ const PersonalInfo = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-gray-500">First name</label>
-            <input
-              value={form.firstName}
-              onChange={set("firstName")}
-              className={inputClass}
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-gray-500">Last name</label>
-            <input
-              value={form.lastName}
-              onChange={set("lastName")}
-              className={inputClass}
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs text-gray-500">Email address</label>
-          <input
-            type="email"
-            value={form.email}
-            onChange={set("email")}
-            className={inputClass}
+          <FormField
+            label="First name"
+            value={form.firstName}
+            onChange={handleFieldChange("firstName")}
+            placeholder="Enter your first name"
+            required
+          />
+          <FormField
+            label="Last name"
+            value={form.lastName}
+            onChange={handleFieldChange("lastName")}
+            placeholder="Enter your last name"
+            required
           />
         </div>
+        <FormField
+          label="Email address"
+          value={form.email}
+          onChange={handleFieldChange("email")}
+          type="email"
+          placeholder="you@example.com"
+          required
+        />
 
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs text-gray-500">Phone number</label>
-          <input
-            type="tel"
-            value={form.phone}
-            onChange={set("phone")}
-            className={inputClass}
-          />
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs text-gray-500">
-            Bio <span className="text-gray-300">(optional)</span>
-          </label>
-          <textarea
-            value={form.bio}
-            onChange={set("bio") as any}
-            rows={3}
-            placeholder="Tell us a little about yourself..."
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 outline-none focus:border-tomato transition-colors placeholder:text-gray-300 resize-none"
-          />
-        </div>
+        <FormField
+          label="Phone number"
+          value={form.phoneNumber || ""}
+          onChange={handleFieldChange("phoneNumber")}
+          type="tel"
+          placeholder="Enter your phone number"
+        />
 
         <div className="flex items-center gap-3 pt-1">
           <button
             type="submit"
-            className="bg-tomato text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-tomato/90 transition-colors"
+            className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-tomato/90 transition-colors"
           >
-            Save Changes
+            {loading === "pending" ? "Saving..." : "Save Changes"}
           </button>
           {saved && (
             <span className="text-xs text-green-500 flex items-center gap-1">
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
+              <img src={checkMark} alt="Success" className="w-4 h-4 " />
               Saved successfully
             </span>
           )}
         </div>
       </form>
+      {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
     </div>
   );
 };

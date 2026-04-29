@@ -2,10 +2,12 @@
   "scripts": {
     "dev": "tsx watch src/app.ts",
     "build": "tsc",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "seed": "tsx src/seed.ts"
   },
   "type": "module",
   "dependencies": {
+    "@faker-js/faker": "^10.4.0",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",
     "cors": "^2.8.5",

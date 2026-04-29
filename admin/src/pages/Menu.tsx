@@ -53,9 +53,13 @@ const Menu = () => {
     setSelectedProduct(null);
   };
   useEffect(() => {
-    dispatch(actGetCategories());
-    dispatch(actGetProducts());
-  }, [dispatch]);
+    if (categories.data.length === 0) {
+      dispatch(actGetCategories());
+    }
+    if (products.length === 0) {
+      dispatch(actGetProducts());
+    }
+  }, []);
 
   return (
     <section className="md:p-10 space-y-8">

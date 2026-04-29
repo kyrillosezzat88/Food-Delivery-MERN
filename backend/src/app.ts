@@ -34,8 +34,8 @@ const Port = process.env.PORT || 5000;
 const MongoDBUrl = process.env.MONGODB_URL || "";
 
 // Auth Routes
-app.use(`/auth`, authRouter);
-app.use(`/user`, userRouter);
+app.use(`${BaseURL}/auth`, authRouter);
+app.use(`${BaseURL}/user`, userRouter);
 app.use(`${BaseURL}/products`, productRouter);
 app.use(`${BaseURL}/categories`, categoryRouter);
 app.use(`${BaseURL}/orders`, orderRouter);

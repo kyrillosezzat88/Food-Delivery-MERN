@@ -3,12 +3,18 @@ import FoodImg from "@assets/images/food_category.png";
 import RatingStar from "@assets/icons/rating_starts.png";
 import AddWhiteIcon from "@assets/icons/add_icon_white.png";
 import QuantityPicker from "./QuantityPicker";
+import { useAppDispatch } from "@store/hooks";
+import { addToCart } from "@store/cart/cartSlice";
 
 const FoodCard = () => {
   const [isAdded, setIsAdded] = useState(false);
+  const dispatch = useAppDispatch();
   const handleAddToCart = () => {
+    console.log("Adding to cart...");
+    dispatch(addToCart(_id));
     setIsAdded((prev) => !prev);
   };
+
   return (
     <div className="rounded-xl overflow-hidden shadow-lg">
       <div className="relative">

@@ -1,4 +1,4 @@
-import { SideBar, Header, Footer } from "@components/common";
+import { SideBar, Header } from "@components/common";
 import { Outlet } from "react-router-dom";
 
 const MainLayout = () => {
@@ -12,7 +12,6 @@ const MainLayout = () => {
         <div className=" w-full md:w-4/5 py-10">
           <div className="container">
             <Outlet />
-            <Footer />
           </div>
         </div>
       </div>

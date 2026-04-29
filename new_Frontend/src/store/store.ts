@@ -1,7 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import auth from "./auth/authSlice";
+import cart from "./cart/cartSlice";
 import type { TLoading } from "@types";
-
+import categories from "./categories/categoriesSlice";
 const loadUserFromLocalStorage = () => {
   try {
     const data = localStorage.getItem("user");
@@ -14,6 +15,8 @@ const loadUserFromLocalStorage = () => {
 const store = configureStore({
   reducer: {
     auth,
+    cart,
+    categories,
   },
   preloadedState: {
     auth: {

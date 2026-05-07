@@ -3,13 +3,15 @@ import type { TLoading } from "@types";
 import type { TProduct } from "src/types/product.type";
 
 type TInitialState = {
-  items: TProduct[];
+  items: { [key: string]: number };
+  itemsFullData: TProduct[];
   loading: TLoading;
   error: string | null;
 };
 
 const initialState: TInitialState = {
-  items: [],
+  items: {},
+  itemsFullData: [],
   loading: "idle",
   error: null,
 };
@@ -18,21 +20,37 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
+    // add to cart or increment if already in cart
     addToCart: (state, action) => {
-      const existingItem = state.items.find(
-        (item) => item._id === action.payload._id,
-      );
+      const id = action.payload;
+      const existingItem = state.items[id];
       if (existingItem) {
-        existingItem.count = (existingItem.count || 1) + 1;
+        state.items[id] = existingItem + 1;
       } else {
-        state.items.push({ ...action.payload, count: 1 });
+        state.items[id] = 1;
       }
     },
     removeFromCart: (state, action) => {
-      state.items = state.items.filter((item) => item._id !== action.payload);
+      const id = action.payload;
+      delete state.items[id];
+      state.itemsFullData = state.itemsFullData.filter(
+        (item) => item._id !== id,
+      );
+    },
+    decrement: (state, action) => {
+      const id = action.payload;
+      const existingItem = state.items[id];
+      if (existingItem && existingItem > 1) {
+        state.items[id] = existingItem - 1;
+      } else {
+        delete state.items[id];
+        state.itemsFullData = state.itemsFullData.filter(
+          (item) => item._id !== id,
+        );
+      }
     },
   },
 });
 
-export const { addToCart, removeFromCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, decrement } = cartSlice.actions;
 export default cartSlice.reducer;

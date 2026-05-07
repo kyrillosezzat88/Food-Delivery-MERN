@@ -4,16 +4,15 @@ import axiosErrorHandler from "@utils/axiosErrorHandler";
 import axios from "axios";
 import type { TPaginatedResponse } from "src/types/paginatedResponse.type";
 
-const actGetProducts = createAsyncThunk(
+export const actGetProducts = createAsyncThunk(
   "products/getProducts",
   async (_, { rejectWithValue }) => {
     try {
-      const items = await axios.get<TPaginatedResponse<TProduct>>("/products");
-      return items.data;
+      const response =
+        await axios.get<TPaginatedResponse<TProduct>>("/products");
+      return response.data;
     } catch (error) {
       return rejectWithValue(axiosErrorHandler(error));
     }
   },
 );
-
-export default actGetProducts;

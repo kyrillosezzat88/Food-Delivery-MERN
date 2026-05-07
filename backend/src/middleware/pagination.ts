@@ -9,7 +9,10 @@ export interface PaginationResult<T> {
   data: T[];
 }
 
-export function paginate<T extends Document>(model: Model<T>) {
+export function paginate<T extends Document>(
+  model: Model<T>,
+  populateFields?: string | string[],
+) {
   return async (req: Request, res: Response, next: NextFunction) => {
     const currentPage = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
@@ -18,7 +21,20 @@ export function paginate<T extends Document>(model: Model<T>) {
 
     try {
       const TotalRecords = await model.countDocuments();
-      const data = await model.find().skip(skip).limit(limit);
+      let query = model.find().skip(skip).limit(limit);
+
+      // Apply population if specified
+      if (populateFields) {
+        if (Array.isArray(populateFields)) {
+          populateFields.forEach((field) => {
+            query = query.populate(field);
+          });
+        } else {
+          query = query.populate(populateFields);
+        }
+      }
+
+      const data = await query;
 
       const result: PaginationResult<T> = {
         currentPage,

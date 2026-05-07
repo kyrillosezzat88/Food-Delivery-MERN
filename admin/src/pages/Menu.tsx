@@ -16,16 +16,12 @@ const Menu = () => {
   );
   const [selectedProduct, setSelectedProduct] = useState<TProduct | null>(null);
   const dispatch = useAppDispatch();
-  const {
-    categories,
-    loading: categoryLoading,
-    error: categoryError,
-  } = useAppSelector((state) => state.categories);
-  const {
-    products,
-    loading: productLoading,
-    error: productError,
-  } = useAppSelector((state) => state.products);
+  const { data: categories, loading: categoryLoading } = useAppSelector(
+    (state) => state.categories,
+  );
+  const { products, loading: productLoading } = useAppSelector(
+    (state) => state.products,
+  );
   // open category
   const addCategoryModal = (status: boolean) => {
     setOpenAddCategoryModal(status);
@@ -53,12 +49,13 @@ const Menu = () => {
     setSelectedProduct(null);
   };
   useEffect(() => {
-    if (categories.data.length === 0) {
+    if (!categories?.data || categories.data.length === 0) {
       dispatch(actGetCategories());
     }
-    if (products.length === 0) {
+    if (!products || products.length === 0) {
       dispatch(actGetProducts());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -102,7 +99,7 @@ const Menu = () => {
               Add New Category
             </span>
           </button>
-          {categories.data.map((cat) => (
+          {categories?.data?.map((cat) => (
             <CategoryCard key={cat._id} {...cat} editCategory={editCategory} />
           ))}
         </div>
@@ -129,7 +126,7 @@ const Menu = () => {
             <p className="text-sm font-medium text-gray-700">Add New Item</p>
           </article>
 
-          {products.map((product, index) => (
+          {products?.map((product, index) => (
             <FoodCard key={index} {...product} editProduct={editProduct} />
           ))}
         </div>

@@ -10,6 +10,8 @@ import {
 } from "../controllers/product.js";
 import { adminJwtMiddleware } from "../middleware/adminJwt.js";
 import uploadImages from "../middleware/uploadImage.js";
+import { paginate } from "../middleware/pagination.js";
+import { Product } from "../modules/product.js";
 
 const productRouter = Router();
 
@@ -24,7 +26,7 @@ productRouter.post(
   CreateProductController,
 );
 
-productRouter.get("/", GetProductsController);
+productRouter.get("/", paginate(Product, "category"), GetProductsController);
 productRouter.get("/:id", GetProductByIdController);
 productRouter.put(
   "/:id",

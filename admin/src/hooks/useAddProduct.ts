@@ -28,7 +28,7 @@ const useAddProduct = ({ onClose }: { onClose: () => void }) => {
   });
 
   const {
-    categories,
+    data: categories,
     loading: categoriesLoading,
     error: categoriesError,
   } = useAppSelector((state) => state.categories);

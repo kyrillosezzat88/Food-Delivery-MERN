@@ -4,29 +4,16 @@ import actGetCategories from "./actions/actGetCategories";
 import actAddCategory from "./actions/actAddCategory";
 import actDeleteCategory from "./actions/actDeleteCategory";
 import actEditCategory from "./actions/actEditCategory";
-
-type TCategories = {
-  currentPage: number;
-  limit: number;
-  TotalRecords: number;
-  totalPages: number;
-  data: TCategory[];
-};
+import type { TPaginatedResponse } from "src/types/paginatedResponse.type";
 
 type TInitialState = {
-  categories: TCategories;
+  data: TPaginatedResponse<TCategory> | null;
   loading: TLoading;
   error: string | null;
 };
 
 const initialState: TInitialState = {
-  categories: {
-    totalPages: 0,
-    limit: 10,
-    TotalRecords: 0,
-    currentPage: 0,
-    data: [],
-  },
+  data: null,
   loading: "idle",
   error: null,
 };
@@ -38,20 +25,19 @@ const categorySlice = createSlice({
   extraReducers(builder) {
     builder.addCase(actGetCategories.pending, (state) => {
       state.loading = "pending";
-      state.categories = initialState.categories;
+      state.data = initialState.data;
       state.error = null;
     });
 
     builder.addCase(actGetCategories.fulfilled, (state, action) => {
       state.loading = "succeeded";
-      state.categories = action.payload;
+      state.data = action.payload;
       state.error = null;
     });
 
     builder.addCase(actGetCategories.rejected, (state, action) => {
       state.loading = "failed";
-      state.categories = initialState.categories;
-      state.error = action.error.message || "Failed to fetch categories";
+      state.error = (action.payload as string) || "Failed to fetch categories";
     });
 
     // add category
@@ -62,17 +48,16 @@ const categorySlice = createSlice({
 
     builder.addCase(actAddCategory.fulfilled, (state, action) => {
       state.loading = "succeeded";
-      state.categories.data = [
-        action.payload.category,
-        ...state.categories.data,
-      ];
-      state.categories.TotalRecords += 1;
+      if (state.data) {
+        state.data.data = [action.payload.category, ...state.data.data];
+        state.data.TotalRecords = state.data.TotalRecords + 1;
+      }
       state.error = null;
     });
 
     builder.addCase(actAddCategory.rejected, (state, action) => {
       state.loading = "failed";
-      state.error = action.error.message || "Failed to add category";
+      state.error = (action.payload as string) || "Failed to add category";
     });
 
     //delete category
@@ -86,13 +71,16 @@ const categorySlice = createSlice({
 
       state.loading = "succeeded";
       state.error = null;
-      state.categories.data = state.categories.data.filter(
-        (cat) => cat._id !== categoryId,
-      );
+      if (state.data) {
+        state.data.data = state.data.data.filter(
+          (cat) => cat._id !== categoryId,
+        );
+        state.data.TotalRecords = state.data.TotalRecords - 1;
+      }
     });
     builder.addCase(actDeleteCategory.rejected, (state, action) => {
       state.loading = "failed";
-      state.error = action.error.message as string;
+      state.error = (action.payload as string) || "Failed to delete category";
     });
     builder.addCase(actEditCategory.pending, (state) => {
       state.loading = "pending";
@@ -102,18 +90,20 @@ const categorySlice = createSlice({
       const categoryID = action.payload.category._id;
       state.loading = "succeeded";
       state.error = null;
-      state.categories.data = state.categories.data.map((cat) =>
-        cat._id === categoryID ? action.payload.category : cat,
-      );
+      if (state.data) {
+        state.data.data = state.data.data.map((cat) =>
+          cat._id === categoryID ? action.payload.category : cat,
+        );
+      }
     });
 
     builder.addCase(actEditCategory.rejected, (state, action) => {
       state.loading = "failed";
-      state.error = action.error.message as string;
+      state.error = (action.payload as string) || "Failed to edit category";
     });
   },
 });
 
-export { actGetCategories, actAddCategory, actEditCategory };
+export { actGetCategories, actAddCategory, actDeleteCategory, actEditCategory };
 
 export default categorySlice.reducer;

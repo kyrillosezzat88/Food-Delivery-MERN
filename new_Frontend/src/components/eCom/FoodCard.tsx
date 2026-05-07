@@ -1,44 +1,62 @@
 import { useState } from "react";
-import FoodImg from "@assets/images/food_category.png";
 import RatingStar from "@assets/icons/rating_starts.png";
 import AddWhiteIcon from "@assets/icons/add_icon_white.png";
 import QuantityPicker from "./QuantityPicker";
-import { useAppDispatch } from "@store/hooks";
-import { addToCart } from "@store/cart/cartSlice";
+import { useAppDispatch, useAppSelector } from "@store/hooks";
+import { addToCart, decrement } from "@store/cart/cartSlice";
+import type { TProduct } from "@types";
 
-const FoodCard = () => {
+const FoodCard = ({ product }: { product: TProduct }) => {
+  const { _id, name, description, price, mainImage } = product;
+  const { items } = useAppSelector((state) => state.cart);
+  const quantityInCart = items[_id || 0];
   const [isAdded, setIsAdded] = useState(false);
   const dispatch = useAppDispatch();
-  const handleAddToCart = () => {
-    console.log("Adding to cart...");
+  const handleAddToCart = (firstAdd?: boolean) => {
     dispatch(addToCart(_id));
-    setIsAdded((prev) => !prev);
+    if (firstAdd) {
+      setIsAdded((prev) => !prev);
+    }
   };
-
+  const handleDecrement = () => {
+    if (quantityInCart === 1) {
+      setIsAdded(false);
+    }
+    dispatch(decrement(_id));
+  };
   return (
     <div className="rounded-xl overflow-hidden shadow-lg">
       <div className="relative">
-        <img src={FoodImg} alt="Food" className="w-full" />
+        <img src={mainImage} alt="Food" className="w-full h-52 object-cover" />
         {isAdded ? (
-          <QuantityPicker className="absolute right-3 bottom-3" />
+          <QuantityPicker
+            handleIncrement={handleAddToCart}
+            handleDecrement={handleDecrement}
+            className="absolute right-3 bottom-3"
+            quantity={quantityInCart}
+          />
         ) : (
           <img
             src={AddWhiteIcon}
             alt="Add"
             className="absolute right-3 bottom-3 w-10"
-            onClick={handleAddToCart}
+            onClick={() => handleAddToCart(true)}
           />
         )}
       </div>
       <div className="p-5">
         <div className="flex justify-between items-start">
-          <h2 className="font-bold text-xl mb-2">Sushi</h2>
+          <h2 className="font-bold text-xl mb-2">{name}</h2>
           <img src={RatingStar} alt="Rating" />
         </div>
         <p className="text-gray-500 text-sm mb-4">
-          Food provides essential nutrients for overall health and well-being
+          {description.length > 100
+            ? description.slice(0, 100) + "..."
+            : description}
         </p>
-        <span className="font-bold text-lg text-primary">$22.00</span>
+        <span className="font-bold text-lg text-primary">
+          ${price.toFixed(2)}
+        </span>
       </div>
     </div>
   );

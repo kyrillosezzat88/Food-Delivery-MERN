@@ -45,9 +45,15 @@ export const CreateProductController = async (req: Request, res: Response) => {
 
 export const GetProductsController = async (req: Request, res: Response) => {
   try {
-    const products = await Product.find().populate("category");
+    const paginationResult = (req as any).pagination;
+    if (!paginationResult) {
+      return res
+        .status(500)
+        .json({ message: "Pagination data missing", status: 500 });
+    }
+
     return res.status(200).json({
-      products,
+      ...paginationResult,
       status: 200,
       message: "Products fetched successfully",
     });

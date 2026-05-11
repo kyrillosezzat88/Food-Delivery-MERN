@@ -13,6 +13,14 @@ const loadUserFromLocalStorage = () => {
     return null;
   }
 };
+const loadItemsFromLocalStorage = () => {
+  try {
+    const data = localStorage.getItem("cart");
+    return data ? JSON.parse(data) : {};
+  } catch {
+    return {};
+  }
+};
 
 const store = configureStore({
   reducer: {
@@ -25,6 +33,12 @@ const store = configureStore({
     auth: {
       user: loadUserFromLocalStorage(),
       token: localStorage.getItem("token") || null,
+      loading: "idle" as TLoading,
+      error: null,
+    },
+    cart: {
+      items: loadItemsFromLocalStorage(),
+      itemsFullData: [],
       loading: "idle" as TLoading,
       error: null,
     },

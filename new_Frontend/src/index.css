@@ -6,7 +6,9 @@
   --color-secondary: #FF8C00;
   /* --font-sans: "Outfit", sans-serif; */
 }
-
+body, *{
+    scroll-behavior: smooth;
+}
 /* Add container styling */
 @layer components {
     .container {

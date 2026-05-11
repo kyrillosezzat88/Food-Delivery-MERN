@@ -1,5 +1,5 @@
 interface CartItem {
-  id: number;
+  id: number | string;
   name: string;
   price: number;
   quantity: number;
@@ -8,8 +8,8 @@ interface CartItem {
 
 interface CartItemsProps {
   cartItems: CartItem[];
-  onUpdateQty: (id: number, delta: number) => void;
-  onRemove: (id: number) => void;
+  onUpdateQty: (id: number | string, delta: number) => void;
+  onRemove: (id: number | string) => void;
 }
 
 const CartItems = ({ cartItems, onUpdateQty, onRemove }: CartItemsProps) => {

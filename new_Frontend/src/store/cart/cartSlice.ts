@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { TLoading } from "@types";
 import type { TProduct } from "src/types/product.type";
+import { actGetFullProductDetails } from "./actions/actGetFullProductDetails";
 
 type TInitialState = {
   items: { [key: string]: number };
@@ -29,6 +30,7 @@ const cartSlice = createSlice({
       } else {
         state.items[id] = 1;
       }
+      localStorage.setItem("cart", JSON.stringify(state.items));
     },
     removeFromCart: (state, action) => {
       const id = action.payload;
@@ -36,6 +38,7 @@ const cartSlice = createSlice({
       state.itemsFullData = state.itemsFullData.filter(
         (item) => item._id !== id,
       );
+      localStorage.setItem("cart", JSON.stringify(state.items));
     },
     decrement: (state, action) => {
       const id = action.payload;
@@ -48,9 +51,25 @@ const cartSlice = createSlice({
           (item) => item._id !== id,
         );
       }
+      localStorage.setItem("cart", JSON.stringify(state.items));
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(actGetFullProductDetails.pending, (state) => {
+      state.loading = "pending";
+      state.error = null;
+    });
+    builder.addCase(actGetFullProductDetails.fulfilled, (state, action) => {
+      state.loading = "succeeded";
+      state.itemsFullData = action.payload;
+    });
+    builder.addCase(actGetFullProductDetails.rejected, (state, action) => {
+      state.loading = "failed";
+      state.error = action.payload as string;
+    });
   },
 });
 
+export { actGetFullProductDetails };
 export const { addToCart, removeFromCart, decrement } = cartSlice.actions;
 export default cartSlice.reducer;

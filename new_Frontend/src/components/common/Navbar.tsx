@@ -7,6 +7,7 @@ import Logout from "@assets/icons/logout.svg";
 import { logout } from "@store/auth/authSlice";
 const Navbar = () => {
   const { token, user } = useAppSelector((state) => state.auth);
+  const { items } = useAppSelector((state) => state.cart);
   const dispatch = useAppDispatch();
   const handleLogout = () => {
     dispatch(logout());
@@ -21,17 +22,20 @@ const Navbar = () => {
           <Link to="/" className="hover:text-gray-700">
             Home
           </Link>
-          <Link to="/menu" className="hover:text-gray-700">
+          <a href="#menu" className="hover:text-gray-700">
             Menu
-          </Link>
+          </a>
           <Link to="/contact" className="hover:text-gray-700">
             Contact
           </Link>
         </div>
         <div className="flex gap-6 items-center">
           <img src={SearchIcon} />
-          <Link to="/cart">
+          <Link to="/cart" className="relative">
             <img src={BasketIcon} />
+            {Object.keys(items).length > 0 ? (
+              <span className="absolute top-0 -right-2 bg-primary text-white text-xs w-4 h-4 rounded-full flex items-center justify-center"></span>
+            ) : null}
           </Link>
           {token ? (
             <div className="flex items-center gap-1">

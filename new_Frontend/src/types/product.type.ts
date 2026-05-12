@@ -9,4 +9,5 @@ export type TProduct = {
   count?: number;
   active?: boolean;
   createdAt?: Date;
+  quantity?: number;
 };

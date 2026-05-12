@@ -13,10 +13,10 @@
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,
-"paths": {
+    "paths": {
         "@assets/*": ["src/assets/*"],
         "@components/*": ["src/components/*"],
-        "@hooks": ["src/hooks/index"],
+        "@hooks/*": ["src/hooks/*"],
         "@pages": ["src/pages/index"],
         "@routes/*": ["src/routes/*"],
         "@store/*": ["src/store/*"],

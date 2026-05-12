@@ -4,6 +4,7 @@ import cart from "./cart/cartSlice";
 import type { TLoading } from "@types";
 import categories from "./categories/categoriesSlice";
 import products from "./products/productsSlice";
+import orders from "./orders/orderSlice";
 
 const loadUserFromLocalStorage = () => {
   try {
@@ -28,6 +29,7 @@ const store = configureStore({
     cart,
     categories,
     products,
+    orders,
   },
   preloadedState: {
     auth: {

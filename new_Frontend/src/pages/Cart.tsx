@@ -1,7 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import FoodImg from "@assets/images/food_category.png";
-import BasketIcon from "@assets/icons/basket_icon.png";
 import type { DeliveryFormData } from "@components/cart/DeliveryForm";
 import {
   CartItems,
@@ -9,83 +7,93 @@ import {
   OrderSummary,
   PromoCode,
 } from "@components/cart";
-import type { CartItem } from "@components/cart/CartItems";
+import { useAppDispatch, useAppSelector } from "@store/hooks";
+import { actGetFullProductDetails } from "@store/cart/cartSlice";
+import { actPlaceOrder } from "@store/orders/orderSlice";
+import CartEmpty from "@components/cart/EmptyCart";
+import { useCartItems, useCartPricing, usePromo } from "@hooks/useCartData";
+import { buildOrderPayload } from "@utils/buildOrderPayload";
 
-const mockCartItems: CartItem[] = [
-  {
-    id: 1,
-    name: "Margherita Pizza",
-    price: 12.99,
-    quantity: 1,
-    image: FoodImg,
-  },
-  { id: 2, name: "Chicken Burger", price: 8.99, quantity: 2, image: FoodImg },
-  { id: 3, name: "Caesar Salad", price: 7.49, quantity: 1, image: FoodImg },
-];
+const EMPTY_FORM: DeliveryFormData = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  address: "",
+  city: "",
+  zip: "",
+};
 
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>(mockCartItems);
-  const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
-  const [promoDiscount, setPromoDiscount] = useState(0);
-  const [form, setForm] = useState<DeliveryFormData>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    address: "",
-    city: "",
-    zip: "",
-  });
+  const { items, loading, error } = useAppSelector((state) => state.cart);
+  const { user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
 
-  const updateQty = (id: number, delta: number) => {
-    setCartItems((prev) =>
-      prev
-        .map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity + delta } : item,
-        )
-        .filter((item) => item.quantity > 0),
-    );
-  };
+  const [form, setForm] = useState<DeliveryFormData>(EMPTY_FORM);
+  const [submitting, setSubmitting] = useState(false);
 
-  const removeItem = (id: number) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0,
+  const { cartItems, updateQty, removeItem } = useCartItems();
+  const { appliedPromo, promoDiscount, applyPromo, removePromo } = usePromo();
+  const { subtotal, delivery, discount, total } = useCartPricing(
+    cartItems,
+    promoDiscount,
+    appliedPromo,
   );
-  const delivery = subtotal > 0 ? 2.99 : 0;
-  const discount = appliedPromo ? (subtotal * promoDiscount) / 100 : 0;
-  const total = subtotal + delivery - discount;
+
+  const totalItemCount = cartItems.reduce((s, i) => s + i.quantity, 0);
+
+  useEffect(() => {
+    if (Object.keys(items).length > 0) {
+      dispatch(actGetFullProductDetails(items));
+    }
+  }, [items, dispatch]);
+
+  const handleCheckout = async () => {
+    if (!user || cartItems.length === 0 || submitting) return;
+
+    setSubmitting(true);
+    try {
+      await dispatch(
+        actPlaceOrder(
+          buildOrderPayload(user._id!, cartItems, total, form, appliedPromo),
+        ),
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const isLoading = loading === "pending";
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 md:px-8">
       <div className="max-w-6xl mx-auto">
-        {/* Page Title */}
-        <div className="mb-8">
+        <header className="mb-8">
           <h1 className="text-2xl font-medium text-gray-800">Your Cart</h1>
           <p className="text-sm text-gray-400 mt-1">
             {cartItems.length > 0
-              ? `You have ${cartItems.reduce((s, i) => s + i.quantity, 0)} items in your cart`
+              ? `You have ${totalItemCount} item${totalItemCount !== 1 ? "s" : ""} in your cart`
               : "Your cart is empty"}
           </p>
-        </div>
+        </header>
 
-        {cartItems.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-4 text-gray-400">
-            <img src={BasketIcon} alt="empty" className="w-16 opacity-20" />
-            <p className="text-lg">Nothing here yet</p>
-            <Link
-              to="/"
-              className="bg-tomato text-white px-6 py-2.5 rounded-full text-sm hover:bg-tomato/90 transition-colors"
-            >
-              Browse Menu
-            </Link>
+        {isLoading && (
+          <div className="flex justify-center py-24">
+            <p className="text-gray-500">Loading cart items…</p>
           </div>
-        ) : (
+        )}
+
+        {!isLoading && error && (
+          <div className="flex justify-center py-24">
+            <p className="text-red-500">Error loading cart: {error}</p>
+          </div>
+        )}
+
+        {!isLoading && !error && cartItems.length === 0 && <CartEmpty />}
+
+        {!isLoading && !error && cartItems.length > 0 && (
           <div className="flex flex-col lg:flex-row gap-8 items-start">
-            {/* Left Column */}
+            {/* Left column — items + delivery */}
             <div className="flex-1 flex flex-col gap-6">
               <CartItems
                 cartItems={cartItems}
@@ -95,7 +103,7 @@ const CartPage = () => {
               <DeliveryForm form={form} onChange={setForm} />
             </div>
 
-            {/* Right Column */}
+            {/* Right column — summary + checkout */}
             <div className="w-full lg:w-90 flex flex-col gap-6">
               <OrderSummary
                 subtotal={subtotal}
@@ -107,17 +115,17 @@ const CartPage = () => {
               />
               <PromoCode
                 appliedPromo={appliedPromo}
-                onApply={(code, pct) => {
-                  setAppliedPromo(code);
-                  setPromoDiscount(pct);
-                }}
-                onRemove={() => {
-                  setAppliedPromo(null);
-                  setPromoDiscount(0);
-                }}
+                onApply={applyPromo}
+                onRemove={removePromo}
               />
-              <button className="w-full bg-primary cursor-pointer font-bold text-white py-3.5 rounded-full hover:bg-tomato/90 transition-colors text-sm">
-                Proceed to Checkout → ${total.toFixed(2)}
+              <button
+                onClick={handleCheckout}
+                disabled={submitting}
+                className="w-full bg-primary cursor-pointer font-bold text-white py-3.5 rounded-full hover:bg-tomato/90 transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {submitting
+                  ? "Placing order…"
+                  : `Proceed to Checkout → $${total.toFixed(2)}`}
               </button>
               <Link
                 to="/"

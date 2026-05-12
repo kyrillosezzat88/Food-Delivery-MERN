@@ -1,14 +1,13 @@
 import type { Request, Response } from "express";
 import { Order } from "../modules/order.js";
+import { calculateOrderTotal } from "../services/calculateOrderTotal.js";
 
 export const createOrderController = async (req: Request, res: Response) => {
   try {
-    console.log("Request Body:", req.body);
-    const newOrder = new Order(req.body);
-    await newOrder.save();
-    return res
-      .status(201)
-      .json({ message: "Order created successfully", order: newOrder });
+    const { products, ...rest } = req.body;
+    const totalAmount = (await calculateOrderTotal(products)).toFixed(2);
+    const order = await Order.create({ ...rest, products, totalAmount });
+    res.status(201).json(order);
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
   }

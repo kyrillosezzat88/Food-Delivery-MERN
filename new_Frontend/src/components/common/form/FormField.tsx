@@ -13,6 +13,8 @@ type FormFieldProps = {
   required?: boolean;
   type?: TInputType;
   className?: string;
+  error?: string;
+  onBlur?: () => void;
 };
 
 const FormField = ({
@@ -23,23 +25,27 @@ const FormField = ({
   required = false,
   type = "text",
   className,
+  error,
+  onBlur,
 }: FormFieldProps) => {
   const id = useId();
 
   return (
     <div className="flex flex-col gap-1.5">
       <label htmlFor={id} className="text-xs text-gray-500">
-        {label}
+        {label} {required && <span className="text-red-500">*</span>}
       </label>
       <input
         id={id}
         type={type}
         value={value}
         onChange={onChange}
+        onBlur={onBlur}
         placeholder={placeholder}
         required={required}
         className={`${inputClass} ${className ?? ""}`}
       />
+      {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
 };

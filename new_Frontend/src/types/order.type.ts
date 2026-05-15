@@ -1,11 +1,20 @@
+import type { TProduct } from "./product.type";
+
 export type TOrder = {
   _id?: string;
-  user: string;
+  user: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
   products: {
-    product: string;
+    product: TProduct;
     quantity: number;
   }[];
   totalAmount: number;
+  subtotal: number;
+  deliveryCost: number;
   status: string;
   paymentMethod: string;
   deliveryAddress: string;
@@ -13,4 +22,7 @@ export type TOrder = {
   address: string;
   additionalNotes?: string;
   appliedPromo?: string;
+  orderID: string;
+  createdAt?: string;
+  updatedAt?: string;
 };

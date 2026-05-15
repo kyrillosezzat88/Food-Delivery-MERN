@@ -1,4 +1,12 @@
-import { Cart, CompletedOrder, Home, Auth, Profile, VerifyEmail } from "@pages";
+import {
+  Cart,
+  CompletedOrder,
+  Home,
+  Auth,
+  Profile,
+  VerifyEmail,
+  NotFound,
+} from "@pages";
 import { AuthCallback } from "@components/auth";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
@@ -13,6 +21,10 @@ const router = createBrowserRouter([
         index: true,
         element: <Home />,
       },
+      {
+        path: "notFound",
+        element: <NotFound />,
+      },
       // ── Protected routes ──
       {
         element: <PrivateLayout />,
@@ -22,7 +34,7 @@ const router = createBrowserRouter([
             element: <Cart />,
           },
           {
-            path: "/completed",
+            path: "/orderCompleted/:orderId",
             element: <CompletedOrder />,
           },
           {
@@ -44,6 +56,16 @@ const router = createBrowserRouter([
   {
     path: "/verify-email",
     element: <VerifyEmail />,
+  },
+  {
+    path: "*",
+    element: <MainLayout />,
+    children: [
+      {
+        index: true,
+        element: <NotFound />,
+      },
+    ],
   },
 ]);
 

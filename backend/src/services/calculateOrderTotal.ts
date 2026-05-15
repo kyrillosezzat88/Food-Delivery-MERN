@@ -1,7 +1,5 @@
 import { Product } from "../modules/product.js";
 
-const DELIVERY_FEE = 2.99;
-
 export async function calculateOrderTotal(
   products: { product: string; quantity: number }[],
 ): Promise<number> {
@@ -15,5 +13,5 @@ export async function calculateOrderTotal(
     return sum + doc.price * item.quantity;
   }, 0);
 
-  return subtotal + DELIVERY_FEE;
+  return subtotal;
 }

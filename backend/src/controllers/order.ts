@@ -5,8 +5,18 @@ import { calculateOrderTotal } from "../services/calculateOrderTotal.js";
 export const createOrderController = async (req: Request, res: Response) => {
   try {
     const { products, ...rest } = req.body;
-    const totalAmount = (await calculateOrderTotal(products)).toFixed(2);
-    const order = await Order.create({ ...rest, products, totalAmount });
+    const deliveryCost = 2.99; // This can be dynamic based on address or other factors
+    const subtotal = (await calculateOrderTotal(products)).toFixed(2);
+    const totalAmount = (parseFloat(subtotal) + deliveryCost).toFixed(2);
+    const orderID = `ORD-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+    const order = await Order.create({
+      ...rest,
+      products,
+      subtotal,
+      orderID,
+      deliveryCost,
+      totalAmount,
+    });
     res.status(201).json(order);
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
@@ -28,11 +38,11 @@ export const getOrderByIdController = async (req: Request, res: Response) => {
   try {
     const order = await Order.findById(req.params.id)
       .populate("user", ["-password", "-isAdmin"])
-      .populate("products");
+      .populate("products.product");
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
-    return res.status(200).json({ order });
+    return res.status(200).json(order);
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
   }

@@ -17,6 +17,7 @@ const orderSchema = new mongoose.Schema(
         },
       },
     ],
+    subtotal: { type: Number, required: true },
     totalAmount: { type: Number, required: true },
     status: {
       type: String,
@@ -31,6 +32,8 @@ const orderSchema = new mongoose.Schema(
     appliedPromo: {
       type: String,
     },
+    orderID: { type: String, unique: true, required: true },
+    deliveryCost: { type: Number, required: true, default: 0 },
   },
   { timestamps: true },
 );

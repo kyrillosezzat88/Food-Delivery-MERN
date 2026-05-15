@@ -53,6 +53,11 @@ const cartSlice = createSlice({
       }
       localStorage.setItem("cart", JSON.stringify(state.items));
     },
+    clearCart: (state) => {
+      state.items = {};
+      state.itemsFullData = [];
+      localStorage.setItem("cart", JSON.stringify(state.items));
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(actGetFullProductDetails.pending, (state) => {
@@ -71,5 +76,6 @@ const cartSlice = createSlice({
 });
 
 export { actGetFullProductDetails };
-export const { addToCart, removeFromCart, decrement } = cartSlice.actions;
+export const { addToCart, removeFromCart, decrement, clearCart } =
+  cartSlice.actions;
 export default cartSlice.reducer;

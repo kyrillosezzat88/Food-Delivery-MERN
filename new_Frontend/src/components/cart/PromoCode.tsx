@@ -69,7 +69,7 @@ const PromoCode = ({ onApply, onRemove, appliedPromo }: PromoCodeProps) => {
               />
               <button
                 onClick={handleApply}
-                className="bg-tomato text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-tomato/90 transition-colors whitespace-nowrap"
+                className="bg-primary text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-tomato/90 transition-colors whitespace-nowrap"
               >
                 Apply
               </button>

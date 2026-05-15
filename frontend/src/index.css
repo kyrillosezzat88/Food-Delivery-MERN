@@ -1,31 +1,48 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
-*{
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-  font-family: Outfit;
-  scroll-behavior: smooth;
-}
+@import "tailwindcss";
+/* @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap'); */
 
-body{
-  min-height: 100vh;
+@theme {
+  --color-primary: #FF6347;
+  --color-secondary: #FF8C00;
+  /* --font-sans: "Outfit", sans-serif; */
 }
-
-a{
-  text-decoration: none;
-  color: inherit;
+body, *{
+    scroll-behavior: smooth;
 }
+/* Add container styling */
+@layer components {
+    .container {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 2rem;
+        /* default padding */
+        padding-right: 2rem;
 
-.app{
-  width: 80%;
-  margin: auto;
+        @screen sm {
+            max-width: 640px;
+        }
+
+        @screen md {
+            max-width: 768px;
+        }
+
+        @screen lg {
+            max-width: 1024px;
+        }
+
+        @screen xl {
+            max-width: 1280px;
+        }
+
+        @screen 2xl {
+            max-width: 1536px;
+        }
+    }
+    .btn-primary {
+        @apply border border-primary  px-6 py-1 font-semibold hover:bg-primary hover:text-white transition-all duration-300 cursor-pointer rounded-full
+    }
 }
-
-@keyframes fadeIn {
-  0%{
-    opacity:0 ;
-  }
-  100%{
-    opacity: 1;
-  }
+button{
+    @apply cursor-pointer
 }

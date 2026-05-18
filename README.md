@@ -25,9 +25,9 @@ This repository includes three main apps:
 
 ## Screenshots
 
-![Food delivery storefront](Frontend/src/assets/images/header_img.png)
+![Food delivery storefront](https://i.ibb.co/p6pyHR3d/tomato.png)
 
-![Admin login](admin/src/assets/images/login.jpg)
+![Admin login](https://i.ibb.co/B5L1M2qB/Screenshot-2026-05-18-094338.png)
 
 ## Project Structure
 

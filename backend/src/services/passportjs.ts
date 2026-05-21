@@ -13,7 +13,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: `${process.env.SERVER_URL}/auth/google/callback`,
+      callbackURL: `${process.env.SERVER_URL}/api/v1/auth/google/callback`,
     },
     async (
       _accessToken: string,
@@ -32,8 +32,14 @@ passport.use(
           user = await User.create({
             googleId: profile.id,
             email,
-            firstName: profile.name?.givenName || profile.displayName?.split(" ")[0] || "Unknown",
-            lastName: profile.name?.familyName || profile.displayName?.split(" ").slice(1).join(" ") || "Unknown",
+            firstName:
+              profile.name?.givenName ||
+              profile.displayName?.split(" ")[0] ||
+              "Unknown",
+            lastName:
+              profile.name?.familyName ||
+              profile.displayName?.split(" ").slice(1).join(" ") ||
+              "Unknown",
             password: "google_oauth_placeholder",
           });
         }

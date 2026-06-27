@@ -5,6 +5,7 @@ import {
   Auth,
   Profile,
   VerifyEmail,
+  Contact,
   NotFound,
 } from "@pages";
 import { AuthCallback } from "@components/auth";
@@ -22,26 +23,29 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "notFound",
-        element: <NotFound />,
+        path: "contact",
+        element: <Contact />,
       },
-      // ── Protected routes ──
       {
         element: <PrivateLayout />,
         children: [
           {
-            path: "/cart",
+            path: "cart",
             element: <Cart />,
           },
           {
-            path: "/orderCompleted/:orderId",
+            path: "orderCompleted/:orderId",
             element: <CompletedOrder />,
           },
           {
-            path: "/profile",
+            path: "profile",
             element: <Profile />,
           },
         ],
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
   },
@@ -56,16 +60,6 @@ const router = createBrowserRouter([
   {
     path: "/verify-email",
     element: <VerifyEmail />,
-  },
-  {
-    path: "*",
-    element: <MainLayout />,
-    children: [
-      {
-        index: true,
-        element: <NotFound />,
-      },
-    ],
   },
 ]);
 

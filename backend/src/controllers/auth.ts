@@ -17,6 +17,13 @@ export const LoginController = async (req: Request, res: Response) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
+
+    if (!user.isVerified) {
+      return res
+        .status(401)
+        .json({ message: "Please verify your account before signing in." });
+    }
+
     const token = JWT.sign(
       { userId: user._id, isAdmin: user.isAdmin },
       process.env.JWT_SECRET as string,

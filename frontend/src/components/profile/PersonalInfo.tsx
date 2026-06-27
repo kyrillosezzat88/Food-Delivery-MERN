@@ -33,7 +33,7 @@ const PersonalInfo = () => {
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       setForm((prev) => ({ ...prev, [field]: e.target.value }) as TForm);
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(actUpdateUser(form as TUser)).then(() => {
       setSaved(true);

@@ -1,88 +1,90 @@
-import { useAppSelector } from "@store/hooks";
+import { FormField } from "@components/common";
+import useAuth from "@hooks/useAuth";
 import type { TUser } from "@types";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { registerSchema, type RegisterFormData } from "@validations";
 
 interface SignupFormProps {
-  onSubmit: (data: TUser) => void;
+  onSubmit: (data: TUser) => Promise<void> | void;
+  setMode?: (mode: "login" | "signup") => void;
 }
 
-const inputClass =
-  "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 outline-none focus:border-tomato transition-colors placeholder:text-gray-300";
+const SignupForm = ({ onSubmit, setMode }: SignupFormProps) => {
+  const { showPassword, setShowPassword, handleSubmitSignup, loading, error } =
+    useAuth({ onSubmitSignup: onSubmit });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    mode: "onTouched",
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      agree: false,
+    },
+  });
 
-const SignupForm = ({ onSubmit }: SignupFormProps) => {
-  const { loading, error } = useAppSelector((state) => state.auth);
-  const [form, setForm] = useState<TUser>({} as TUser);
-  const [showPassword, setShowPassword] = useState(false);
+  const onFormSubmit = async (data: RegisterFormData) => {
+    const success = await handleSubmitSignup(data as TUser);
 
-  const set =
-    (field: keyof TUser) => (e: React.ChangeEvent<HTMLInputElement>) =>
-      setForm({
-        ...form,
-        [field]: field === "agree" ? e.target.checked : e.target.value,
-      });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await onSubmit(form);
-    setForm({} as TUser);
+    if (success) {
+      reset();
+      setShowPassword(false);
+      setMode?.("login");
+    }
   };
 
-  const passwordMatch = form.confirmPassword
-    ? form.password === form.confirmPassword
-    : null;
-
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3">
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs text-gray-500">First name</label>
-          <input
-            placeholder="John"
-            value={form.firstName ?? ""}
-            onChange={set("firstName")}
-            className={inputClass}
-            required
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs text-gray-500">Last name</label>
-          <input
-            placeholder="Doe"
-            value={form.lastName ?? ""}
-            onChange={set("lastName")}
-            className={inputClass}
-            required
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs text-gray-500">Email address</label>
-        <input
-          type="email"
-          placeholder="john@example.com"
-          value={form.email ?? ""}
-          onChange={set("email")}
-          className={inputClass}
+        <FormField
+          label="First name"
+          placeholder="John"
+          {...register("firstName")}
           required
+          error={errors.firstName?.message}
+        />
+
+        <FormField
+          label="Last name"
+          placeholder="Doe"
+          {...register("lastName")}
+          required
+          error={errors.lastName?.message}
         />
       </div>
 
+      <FormField
+        label="Email address"
+        type="email"
+        placeholder="john@example.com"
+        {...register("email")}
+        required
+        error={errors.email?.message}
+      />
+
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs text-gray-500">Password</label>
         <div className="relative">
-          <input
+          <FormField
+            label="Password"
             type={showPassword ? "text" : "password"}
             placeholder="••••••••"
-            value={form.password ?? ""}
-            onChange={set("password")}
-            className={`${inputClass} pr-12`}
+            {...register("password")}
+            className="pr-12"
             required
+            error={errors.password?.message}
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+            className="absolute right-4 top-1/2  text-xs text-gray-400 hover:text-gray-600 transition-colors"
           >
             {showPassword ? "Hide" : "Show"}
           </button>
@@ -90,36 +92,29 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs text-gray-500">Confirm password</label>
         <div className="relative">
-          <input
+          <FormField
+            label="Confirm password"
             type={showPassword ? "text" : "password"}
             placeholder="••••••••"
-            value={form.confirmPassword ?? ""}
-            onChange={set("confirmPassword")}
-            className={`${inputClass} pr-20`}
+            {...register("confirmPassword")}
+            className="pr-20"
             required
+            error={errors.confirmPassword?.message}
           />
-          {passwordMatch !== null && (
-            <span
-              className={`absolute right-4 top-1/2 -translate-y-1/2 text-xs ${
-                passwordMatch ? "text-green-500" : "text-red-400"
-              }`}
-            >
-              {passwordMatch ? "Match" : "No match"}
-            </span>
-          )}
         </div>
       </div>
 
       <label className="flex items-start gap-3 cursor-pointer">
         <input
           type="checkbox"
-          checked={form.agree}
-          onChange={set("agree")}
+          {...register("agree")}
           className="mt-0.5 accent-tomato"
           required
         />
+        {errors.agree && (
+          <p className="text-xs text-red-500 mt-1">{errors.agree.message}</p>
+        )}
         <span className="text-xs text-gray-500 leading-relaxed">
           I agree to the
           <span className="text-tomato hover:underline cursor-pointer">
@@ -139,8 +134,14 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
         {loading === "pending" ? "Creating account..." : "Create Account"}
       </button>
       {error && (
-        <p className="text-sm text-red-500 mt-2 font-bold bg-red-100 p-4 rounded text-center">
-          {error}
+        <p className="text-sm text-red-500 mt-2 font-bold bg-red-100 p-4 rounded ">
+          {Array.isArray(error)
+            ? error.map((e, i) => (
+                <span className="block" key={i}>
+                  • {e}
+                </span>
+              ))
+            : error}
         </p>
       )}
       {loading === "succeeded" && (

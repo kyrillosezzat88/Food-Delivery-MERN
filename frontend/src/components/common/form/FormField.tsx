@@ -1,4 +1,6 @@
 import { useId } from "react";
+import type { InputHTMLAttributes } from "react";
+import type { UseFormRegisterReturn } from "react-hook-form";
 
 const inputClass =
   "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 outline-none focus:border-tomato transition-colors placeholder:text-gray-300";
@@ -7,26 +9,21 @@ type TInputType = "text" | "email" | "tel" | "password" | "number" | "url";
 
 type FormFieldProps = {
   label: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   required?: boolean;
   type?: TInputType;
   className?: string;
   error?: string;
-  onBlur?: () => void;
-};
+} & InputHTMLAttributes<HTMLInputElement>; // support regular input props and RHF register props through standard HTML attrs
 
 const FormField = ({
   label,
-  value,
-  onChange,
   placeholder,
   required = false,
   type = "text",
   className,
   error,
-  onBlur,
+  ...registerProps // 👈 rest are register props (onChange, onBlur, ref, name)
 }: FormFieldProps) => {
   const id = useId();
 
@@ -38,12 +35,9 @@ const FormField = ({
       <input
         id={id}
         type={type}
-        value={value}
-        onChange={onChange}
-        onBlur={onBlur}
         placeholder={placeholder}
-        required={required}
         className={`${inputClass} ${className ?? ""}`}
+        {...registerProps} // 👈 spread correctly
       />
       {error && <p className="text-xs text-red-500">{error}</p>}
     </div>

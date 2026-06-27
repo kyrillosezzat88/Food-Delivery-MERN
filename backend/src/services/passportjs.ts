@@ -24,11 +24,12 @@ passport.use(
       try {
         let user = await User.findOne({ googleId: profile.id });
 
+        const email = profile.emails?.[0]?.value;
         if (!user) {
-          const email = profile.emails?.[0]?.value;
           if (!email) {
             return done(new Error("Email is required for Google login"));
           }
+          // Create user from Google profile and mark as verified
           user = await User.create({
             googleId: profile.id,
             email,
@@ -41,7 +42,14 @@ passport.use(
               profile.displayName?.split(" ").slice(1).join(" ") ||
               "Unknown",
             password: "google_oauth_placeholder",
+            isVerified: true,
+            verificationToken: null,
+            verificationTokenExpires: null,
           });
+        } else if (!user.isVerified) {
+          // If an existing Google user isn't marked verified, ensure it's set
+          user.isVerified = true;
+          await user.save();
         }
 
         return done(null, user);

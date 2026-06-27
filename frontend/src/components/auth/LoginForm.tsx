@@ -1,5 +1,5 @@
-import { useAppSelector } from "@store/hooks";
-import { useState } from "react";
+import { FormField } from "@components/common";
+import useAuth from "@hooks/useAuth";
 
 export type TLoginFormData = {
   email: string;
@@ -10,52 +10,43 @@ interface LoginFormProps {
   onSubmit: (data: TLoginFormData) => void;
 }
 
-const inputClass =
-  "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 outline-none focus:border-tomato transition-colors placeholder:text-gray-300";
-
 const LoginForm = ({ onSubmit }: LoginFormProps) => {
-  const { loading, error, user } = useAppSelector((state) => state.auth);
-  const [form, setForm] = useState<TLoginFormData>({ email: "", password: "" });
-  const [showPassword, setShowPassword] = useState(false);
-
-  const set =
-    (field: keyof TLoginFormData) => (e: React.ChangeEvent<HTMLInputElement>) =>
-      setForm({ ...form, [field]: e.target.value });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await onSubmit(form);
-    setForm({ email: "", password: "" });
-  };
+  const {
+    handleSubmitLogin,
+    setLogin,
+    loginForm,
+    loading,
+    error,
+    user,
+    showPassword,
+    setShowPassword,
+  } = useAuth({ onSubmitLogin: onSubmit });
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs text-gray-500">Email address</label>
-        <input
-          type="email"
-          placeholder="john@example.com"
-          value={form.email}
-          onChange={set("email")}
-          className={inputClass}
-          required
-        />
-      </div>
+    <form onSubmit={handleSubmitLogin} className="flex flex-col gap-4">
+      <FormField
+        label="Email address"
+        type="email"
+        placeholder="john@example.com"
+        value={loginForm.email}
+        onChange={setLogin("email")}
+        required
+      />
 
       <div className="flex flex-col gap-1.5">
-        <div className="flex justify-between items-center">
-          <label className="text-xs text-gray-500">Password</label>
+        <div className="flex justify-end">
           <button type="button" className="text-xs text-tomato hover:underline">
             Forgot password?
           </button>
         </div>
         <div className="relative">
-          <input
+          <FormField
+            label="Password"
             type={showPassword ? "text" : "password"}
             placeholder="••••••••"
-            value={form.password}
-            onChange={set("password")}
-            className={`${inputClass} pr-12`}
+            value={loginForm.password}
+            onChange={setLogin("password")}
+            className="pr-12"
             required
           />
           <button

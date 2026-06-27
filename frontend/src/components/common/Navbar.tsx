@@ -15,9 +15,9 @@ const Navbar = () => {
   return (
     <div className="container">
       <div className="flex justify-between gap-4 py-9">
-        <div className="text-2xl font-bold">
+        <Link to="/" className="text-2xl font-bold">
           <img src={Logo} />
-        </div>
+        </Link>
         <div className="gap-4 hidden md:flex text-xl">
           <Link to="/" className="hover:text-gray-700">
             Home

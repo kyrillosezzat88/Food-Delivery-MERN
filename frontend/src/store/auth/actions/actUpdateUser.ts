@@ -6,6 +6,7 @@ import axios from "axios";
 const actUpdateUser = createAsyncThunk(
   "auth/updateUser",
   async (userData: TUser, { rejectWithValue }) => {
+    console.log("Updating user with data:", userData);
     try {
       const updatedUser = await axios.put(`/user/${userData._id}`, userData);
       console.log("Updated user response:", updatedUser.data);

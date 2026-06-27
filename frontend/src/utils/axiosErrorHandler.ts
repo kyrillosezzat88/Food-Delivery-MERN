@@ -6,19 +6,22 @@ const axiosErrorHandler = (error: unknown): string => {
   if (!isAxiosError(error)) return UNEXPECTED_ERROR;
 
   const message =
-    error.response?.data?.message || error.message || UNEXPECTED_ERROR;
+    error.response?.data?.errors?.map((e: { message: string }) => e.message) ||
+    error.response?.data?.message ||
+    error.message ||
+    UNEXPECTED_ERROR;
 
   const status = error.response?.status;
 
-  if (status === 401 && window.location.pathname !== "/login") {
+  if (status === 401 && window.location.pathname !== "/auth") {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    window.location.href = "/login";
+    window.location.href = "/auth";
     return message;
   }
 
   if (status === 404) {
-    // window.location.href = "/notFound";
+    window.location.href = "/notFound";
     return message;
   }
 
@@ -28,8 +31,11 @@ const axiosErrorHandler = (error: unknown): string => {
       response: error.response?.data,
     });
   }
-
-  toast.error(message);
+  if (Array.isArray(message)) {
+    message.forEach((msg) => toast.error(msg));
+  } else {
+    toast.error(message);
+  }
   return message;
 };
 

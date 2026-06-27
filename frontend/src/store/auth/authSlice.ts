@@ -9,13 +9,13 @@ type TInitState = {
   user: TUser | null;
   token: string | null;
   loading: TLoading;
-  error: string | null;
+  error: string | null | string[];
 };
 const initialState: TInitState = {
   user: null,
   token: localStorage.getItem("token") || null,
   loading: "idle",
-  error: null as string | null,
+  error: null as string | null | string[],
 };
 const authSlice = createSlice({
   name: "auth",
@@ -44,7 +44,7 @@ const authSlice = createSlice({
     builder.addCase(actLogin.rejected, (state, action) => {
       state.loading = "failed";
       state.user = null;
-      state.error = action.payload as string;
+      state.error = action.payload as string | string[];
     });
     builder.addCase(actRegister.pending, (state) => {
       state.loading = "pending";
@@ -57,7 +57,7 @@ const authSlice = createSlice({
     });
     builder.addCase(actRegister.rejected, (state, action) => {
       state.loading = "failed";
-      state.error = action.payload as string;
+      state.error = action.payload as string | string[];
     });
     builder.addCase(actGoogleLogin.pending, (state) => {
       state.loading = "pending";
@@ -73,7 +73,7 @@ const authSlice = createSlice({
     builder.addCase(actGoogleLogin.rejected, (state, action) => {
       state.loading = "failed";
       state.user = null;
-      state.error = action.payload as string;
+      state.error = action.payload as string | string[];
     });
     builder.addCase(actUpdateUser.pending, (state) => {
       state.loading = "pending";
@@ -85,7 +85,7 @@ const authSlice = createSlice({
     });
     builder.addCase(actUpdateUser.rejected, (state, action) => {
       state.loading = "failed";
-      state.error = action.payload as string;
+      state.error = action.payload as string | string[];
     });
   },
 });

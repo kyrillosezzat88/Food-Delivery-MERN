@@ -13,6 +13,8 @@ import {
 import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { actLogin, actRegister } from "@store/auth/authSlice";
 import { useNavigate } from "react-router-dom";
+import type { TUser } from "@components/auth/SignupForm";
+import { toast } from "react-toastify/unstyled";
 const Auth = () => {
   const dispatch = useAppDispatch();
   const { token } = useAppSelector((state) => state.auth);
@@ -27,17 +29,31 @@ const Auth = () => {
     }
   }, [token, navigate]);
 
-  const handleLogin = (data: TLoginFormData) => {
+  const handleLogin = async (data: TLoginFormData) => {
     console.log("Login:", data);
-    dispatch(actLogin(data)).then((res) => {
-      if (res.payload.user.isVerified) {
+
+    try {
+      const res = await dispatch(actLogin(data as TUser)).unwrap();
+
+      if (res.user?.isVerified) {
         navigate("/");
       }
-    });
+    } catch (err) {
+      const message = typeof err === "string" ? err : "Login failed.";
+      if (message === "Please verify your account before signing in.") {
+        toast.error(message);
+      }
+    }
   };
 
-  const handleSignup = (data: SignupFormData) => {
-    dispatch(actRegister(data));
+  const handleSignup = async (data: SignupFormData) => {
+    try {
+      await dispatch(actRegister(data)).unwrap();
+      toast.success("Account created! Please check your email to verify.");
+    } catch (err) {
+      toast.error("Failed to create account. Please try again.");
+      console.error("Signup error:", err);
+    }
   };
 
   return (
@@ -68,9 +84,9 @@ const Auth = () => {
             <GoogleButton />
 
             {mode === "login" ? (
-              <LoginForm onSubmit={handleLogin} />
+              <LoginForm onSubmit={handleLogin} setMode={setMode} />
             ) : (
-              <SignupForm onSubmit={handleSignup} />
+              <SignupForm onSubmit={handleSignup} setMode={setMode} />
             )}
 
             <AuthFooter mode={mode} onToggle={toggle} />

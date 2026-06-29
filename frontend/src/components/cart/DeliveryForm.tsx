@@ -1,7 +1,5 @@
-import { useState } from "react";
 import { FormField } from "@components/common";
-import { deliveryFormSchema, type DeliveryFormErrors } from "@validations";
-import { validateField } from "@utils/validateField";
+import type { FieldErrors, UseFormRegister } from "react-hook-form";
 
 interface DeliveryFormData {
   firstName: string;
@@ -14,38 +12,14 @@ interface DeliveryFormData {
 }
 
 interface DeliveryFormProps {
-  form: DeliveryFormData;
-  onChange: (updated: DeliveryFormData) => void;
+  register: UseFormRegister<DeliveryFormData>;
+  errors: FieldErrors<DeliveryFormData>;
 }
 
 const inputClass =
   "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-tomato transition-colors placeholder:text-gray-300";
 
-const DeliveryForm = ({ form, onChange }: DeliveryFormProps) => {
-  const [errors, setErrors] = useState<DeliveryFormErrors>({});
-
-  const set =
-    (field: keyof DeliveryFormData) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const updated = { ...form, [field]: e.target.value };
-      onChange(updated);
-      // Clear error for this field
-      if (errors[field]) {
-        setErrors((prev: DeliveryFormErrors) => ({
-          ...prev,
-          [field]: undefined,
-        }));
-      }
-    };
-
-  const handleValidateField = (field: keyof DeliveryFormData) => {
-    const errorMessage = validateField(deliveryFormSchema, field, form[field]);
-
-    setErrors((prev) => ({
-      ...prev,
-      [field]: errorMessage,
-    }));
-  };
+const DeliveryForm = ({ register, errors }: DeliveryFormProps) => {
   return (
     <div
       className="bg-white rounded-2xl border border-gray-100"
@@ -60,78 +34,64 @@ const DeliveryForm = ({ form, onChange }: DeliveryFormProps) => {
         <div className="grid grid-cols-2 gap-4">
           <FormField
             placeholder="First name"
-            value={form.firstName}
-            onChange={set("firstName")}
-            onBlur={() => handleValidateField("firstName")}
+            {...register("firstName")}
             className={`${inputClass} ${errors.firstName ? "border-red-500" : ""}`}
             label="First Name"
             required
-            error={errors.firstName}
+            error={errors.firstName?.message}
           />
           <FormField
             placeholder="Last name"
-            value={form.lastName}
-            onChange={set("lastName")}
-            onBlur={() => handleValidateField("lastName")}
+            {...register("lastName")}
             className={`${inputClass} ${errors.lastName ? "border-red-500" : ""}`}
             label="Last Name"
             required
-            error={errors.lastName}
+            error={errors.lastName?.message}
           />
         </div>
         <FormField
           type="email"
           placeholder="Email address"
-          value={form.email}
-          onChange={set("email")}
-          onBlur={() => handleValidateField("email")}
+          {...register("email")}
           className={`${inputClass} ${errors.email ? "border-red-500" : ""}`}
           label="Email"
           required
-          error={errors.email}
+          error={errors.email?.message}
         />
         <FormField
           type="tel"
           placeholder="Phone number"
-          value={form.phone}
-          onChange={set("phone")}
-          onBlur={() => handleValidateField("phone")}
+          {...register("phone")}
           className={`${inputClass} ${errors.phone ? "border-red-500" : ""}`}
           label="Phone Number"
           required
-          error={errors.phone}
+          error={errors.phone?.message}
         />
 
         <FormField
           placeholder="Street address"
-          value={form.address}
-          onChange={set("address")}
-          onBlur={() => handleValidateField("address")}
+          {...register("address")}
           className={`${inputClass} ${errors.address ? "border-red-500" : ""}`}
           label="Street Address"
           required
-          error={errors.address}
+          error={errors.address?.message}
         />
         <div className="grid grid-cols-2 gap-4">
           <FormField
             placeholder="City"
-            value={form.city}
-            onChange={set("city")}
-            onBlur={() => handleValidateField("city")}
+            {...register("city")}
             className={`${inputClass} ${errors.city ? "border-red-500" : ""}`}
             label="City"
             required
-            error={errors.city}
+            error={errors.city?.message}
           />
           <FormField
             placeholder="ZIP / Postal code"
-            value={form.zip}
-            onChange={set("zip")}
-            onBlur={() => handleValidateField("zip")}
+            {...register("zip")}
             className={`${inputClass} ${errors.zip ? "border-red-500" : ""}`}
             label="ZIP / Postal Code"
             required
-            error={errors.zip}
+            error={errors.zip?.message}
           />
         </div>
       </div>

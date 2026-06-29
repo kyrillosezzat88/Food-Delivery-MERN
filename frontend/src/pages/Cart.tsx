@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import type { DeliveryFormData } from "@components/cart/DeliveryForm";
 import {
@@ -13,6 +15,7 @@ import { actPlaceOrder } from "@store/orders/orderSlice";
 import CartEmpty from "@components/cart/EmptyCart";
 import { useCartItems, useCartPricing, usePromo } from "@hooks/useCartData";
 import { buildOrderPayload } from "@utils/buildOrderPayload";
+import { deliveryFormSchema } from "@validations";
 
 const EMPTY_FORM: DeliveryFormData = {
   firstName: "",
@@ -29,7 +32,6 @@ const CartPage = () => {
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
-  const [form, setForm] = useState<DeliveryFormData>(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   const { cartItems, updateQty, removeItem } = useCartItems();
@@ -41,32 +43,42 @@ const CartPage = () => {
   );
 
   const totalItemCount = cartItems.reduce((s, i) => s + i.quantity, 0);
+  const {
+    handleSubmit,
+    reset,
+    register,
+    formState: { errors },
+  } = useForm<DeliveryFormData>({
+    resolver: zodResolver(deliveryFormSchema),
+    mode: "onTouched",
+    defaultValues: EMPTY_FORM,
+  });
 
   useEffect(() => {
     if (Object.keys(items).length > 0) {
       dispatch(actGetFullProductDetails(items));
     }
-  }, [items, dispatch]);
+  }, []);
 
-  const handleCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleCheckout = async (data: DeliveryFormData) => {
     if (!user || cartItems.length === 0 || submitting) return;
 
     setSubmitting(true);
     try {
       const result = await dispatch(
         actPlaceOrder(
-          buildOrderPayload(user._id!, cartItems, total, form, appliedPromo),
+          buildOrderPayload(user._id!, cartItems, total, data, appliedPromo),
         ),
       );
       if (result.type === actPlaceOrder.fulfilled.type) {
         dispatch(clearCart());
-        setForm(EMPTY_FORM);
-        setSubmitting(false);
+        reset(EMPTY_FORM);
         navigate(`/orderCompleted/${result.payload._id}`);
       }
     } catch (err) {
       console.error("Checkout failed:", err);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -99,7 +111,7 @@ const CartPage = () => {
         {!isLoading && !error && cartItems.length === 0 && <CartEmpty />}
 
         {!isLoading && !error && cartItems.length > 0 && (
-          <form onSubmit={handleCheckout}>
+          <form onSubmit={handleSubmit(handleCheckout)}>
             <div className="flex flex-col lg:flex-row gap-8 items-start">
               {/* Left column — items + delivery */}
               <div className="flex-1 flex flex-col gap-6">
@@ -108,7 +120,7 @@ const CartPage = () => {
                   onUpdateQty={updateQty}
                   onRemove={removeItem}
                 />
-                <DeliveryForm form={form} onChange={setForm} />
+                <DeliveryForm register={register} errors={errors} />
               </div>
 
               {/* Right column — summary + checkout */}

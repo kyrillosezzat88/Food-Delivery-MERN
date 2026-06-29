@@ -39,7 +39,7 @@ const FoodCard = ({ product }: { product: TProduct }) => {
           <img
             src={AddWhiteIcon}
             alt="Add"
-            className="absolute right-3 bottom-3 w-10"
+            className="absolute right-3 bottom-3 w-10 cursor-pointer"
             onClick={() => handleAddToCart(true)}
           />
         )}

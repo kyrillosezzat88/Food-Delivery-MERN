@@ -57,6 +57,7 @@ const CartItems = ({ cartItems, onUpdateQty, onRemove }: CartItemsProps) => {
           <div className="flex items-center gap-2 justify-center">
             <button
               onClick={() => onUpdateQty(item.id, -1)}
+              type="button"
               className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center hover:border-tomato hover:text-tomato transition-colors text-gray-500"
             >
               −
@@ -66,6 +67,7 @@ const CartItems = ({ cartItems, onUpdateQty, onRemove }: CartItemsProps) => {
             </span>
             <button
               onClick={() => onUpdateQty(item.id, 1)}
+              type="button"
               className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center hover:border-tomato hover:text-tomato transition-colors text-gray-500"
             >
               +

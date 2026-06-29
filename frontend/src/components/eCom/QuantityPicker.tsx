@@ -17,7 +17,12 @@ const QuantityPicker = ({
   return (
     <div className={`${className}`}>
       <div className="flex gap-2 bg-white rounded-full p-1 items-center justify-center shadow-lg">
-        <img src={RemoveIcon} alt="Remove" onClick={handleDecrement} />
+        <img
+          src={RemoveIcon}
+          className="cursor-pointer"
+          alt="Remove"
+          onClick={handleDecrement}
+        />
         <span>{quantity}</span>
         <img
           src={AddGreenIcon}
@@ -25,6 +30,7 @@ const QuantityPicker = ({
           onClick={() => {
             handleIncrement?.();
           }}
+          className="cursor-pointer"
         />
       </div>
     </div>

@@ -7,7 +7,7 @@ export function buildOrderPayload(
   cartItems: CartItem[],
   total: number,
   form: DeliveryFormData,
-  appliedPromo: string | null,
+  appliedPromo?: string | null,
 ): TOrder {
   return {
     user,

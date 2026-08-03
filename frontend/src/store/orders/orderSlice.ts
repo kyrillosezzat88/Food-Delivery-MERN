@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { TLoading, TOrder } from "@types";
 import actPlaceOrder from "./actions/actPlaceOrder";
 import actGetOrderDetails from "./actions/actGetOrderDetails";
+import actGetUserOrders from "./actions/getUserOrders";
 
 type TInitState = {
   orders: TOrder[];
@@ -49,8 +50,23 @@ const orderSlice = createSlice({
       state.loading = "failed";
       state.error = action.payload as string;
     });
+
+    //user orders
+    builder.addCase(actGetUserOrders.pending, (state) => {
+      state.loading = "pending";
+      state.error = null;
+    });
+    builder.addCase(actGetUserOrders.fulfilled, (state, action) => {
+      state.loading = "succeeded";
+      state.orders = action.payload;
+      state.error = null;
+    });
+    builder.addCase(actGetUserOrders.rejected, (state, action) => {
+      state.loading = "failed";
+      state.error = action.payload as string;
+    });
   },
 });
 
-export { actPlaceOrder, actGetOrderDetails };
+export { actPlaceOrder, actGetOrderDetails, actGetUserOrders };
 export default orderSlice.reducer;

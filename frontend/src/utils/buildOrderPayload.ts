@@ -1,6 +1,18 @@
 import type { DeliveryFormData } from "@components/cart/DeliveryForm";
 import type { CartItem } from "@components/cart/CartItems";
-import type { TOrder } from "@types";
+
+export type PlaceOrderPayload = {
+  user: string;
+  products: { product: string; quantity: number }[];
+  totalAmount: number;
+  status: "Pending";
+  paymentMethod: "cash" | "card" | "online";
+  deliveryAddress: string;
+  phoneNumber: string;
+  address: string;
+  additionalNotes?: string;
+  appliedPromo?: string | null;
+};
 
 export function buildOrderPayload(
   user: string,
@@ -8,7 +20,7 @@ export function buildOrderPayload(
   total: number,
   form: DeliveryFormData,
   appliedPromo?: string | null,
-): TOrder {
+): PlaceOrderPayload {
   return {
     user,
     products: cartItems.map((item) => ({

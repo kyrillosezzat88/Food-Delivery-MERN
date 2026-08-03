@@ -6,3 +6,4 @@ export { default as Profile } from "./Profile";
 export { default as VerifyEmail } from "./VerifyEmail";
 export { default as Contact } from "./Contact";
 export { default as NotFound } from "./NotFound";
+export { default as TrackOrder } from "./TrackOrder";

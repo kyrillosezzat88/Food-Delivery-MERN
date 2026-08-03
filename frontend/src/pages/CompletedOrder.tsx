@@ -56,7 +56,7 @@ const CompletedOrder = () => {
         <DeliveryInfo recentOrder={recentOrder} />
 
         {/* Actions */}
-        <OrderActions />
+        <OrderActions orderId={recentOrder._id || null} />
       </div>
     </div>
   );

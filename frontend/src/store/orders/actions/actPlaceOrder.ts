@@ -1,11 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import type { TOrder } from "@types";
+import type { PlaceOrderPayload } from "@utils/buildOrderPayload";
 import axiosErrorHandler from "@utils/axiosErrorHandler";
 import axios from "axios";
 
 const actPlaceOrder = createAsyncThunk(
   "orders/placeOrder",
-  async (orderData: TOrder, { rejectWithValue }) => {
+  async (orderData: PlaceOrderPayload, { rejectWithValue }) => {
     try {
       const response = await axios.post("/orders", orderData);
       console.log("Order placed successfully:", response.data);

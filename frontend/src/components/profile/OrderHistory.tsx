@@ -1,77 +1,33 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-type OrderStatus = "delivered" | "preparing" | "on the way" | "cancelled";
-
-interface Order {
-  id: string;
-  date: string;
-  items: string;
-  total: number;
-  status: OrderStatus;
-}
-
-const mockOrders: Order[] = [
-  {
-    id: "ORD-A1B2C3",
-    date: "Mar 28, 2026",
-    items: "Margherita Pizza, Caesar Salad",
-    total: 20.48,
-    status: "delivered",
-  },
-  {
-    id: "ORD-D4E5F6",
-    date: "Mar 22, 2026",
-    items: "Chicken Burger x2",
-    total: 17.98,
-    status: "delivered",
-  },
-  {
-    id: "ORD-G7H8I9",
-    date: "Mar 30, 2026",
-    items: "Pasta Carbonara, Tiramisu",
-    total: 24.99,
-    status: "on the way",
-  },
-  {
-    id: "ORD-J1K2L3",
-    date: "Mar 31, 2026",
-    items: "BBQ Ribs, Coleslaw",
-    total: 31.5,
-    status: "preparing",
-  },
-  {
-    id: "ORD-M4N5O6",
-    date: "Mar 15, 2026",
-    items: "Veggie Wrap",
-    total: 9.99,
-    status: "cancelled",
-  },
-];
-
-const statusStyle: Record<OrderStatus, string> = {
-  delivered: "bg-green-50 text-green-600",
-  preparing: "bg-amber-50 text-amber-600",
-  "on the way": "bg-blue-50 text-blue-600",
-  cancelled: "bg-red-50 text-red-400",
-};
+import { Loading, ErrorMessage } from "@components/common";
+import useUserOrdersHistory from "@hooks/useUserOrdersHistory";
 
 const OrderHistory = () => {
-  const [filter, setFilter] = useState<OrderStatus | "all">("all");
-  const navigate = useNavigate();
+  const {
+    filter,
+    setFilter,
+    navigate,
+    loading,
+    error,
+    filteredOrders,
+    filters,
+    statusStyle,
+    normalizeStatus,
+  } = useUserOrdersHistory();
 
-  const filters: (OrderStatus | "all")[] = [
-    "all",
-    "delivered",
-    "preparing",
-    "on the way",
-    "cancelled",
-  ];
+  if (loading === "pending") {
+    return <Loading message="Loading your orders..." />;
+  }
 
-  const filtered =
-    filter === "all"
-      ? mockOrders
-      : mockOrders.filter((o) => o.status === filter);
+  if (error) {
+    return (
+      <ErrorMessage
+        title="Failed to load orders"
+        message={error}
+        actionLink="/"
+        actionLabel="Back to menu"
+      />
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100">
@@ -101,45 +57,60 @@ const OrderHistory = () => {
 
       {/* Orders */}
       <div className="divide-y divide-gray-100">
-        {filtered.length === 0 ? (
+        {filteredOrders.length === 0 ? (
           <div className="px-6 py-12 text-center text-gray-400 text-sm">
-            No orders found
+            {filteredOrders.length === 0
+              ? "No orders found"
+              : "No orders match the selected filter."}
           </div>
         ) : (
-          filtered.map((order) => (
-            <div
-              key={order.id}
-              className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-            >
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium text-gray-800">
-                    {order.id}
+          filteredOrders.map((order) => {
+            const status = normalizeStatus(order.status);
+            const productNames =
+              order.products
+                ?.map((item) => item.product?.name || "")
+                .filter(Boolean)
+                .join(", ") || "No items";
+
+            return (
+              <div
+                key={order._id ?? order.orderID}
+                className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+              >
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-gray-800">
+                      {order.orderID ?? order._id}
+                    </p>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full capitalize font-medium ${statusStyle[status]}`}
+                    >
+                      {status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    {order.createdAt
+                      ? new Date(order.createdAt).toLocaleDateString()
+                      : "Date unavailable"}
                   </p>
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded-full capitalize font-medium ${statusStyle[order.status]}`}
-                  >
-                    {order.status}
-                  </span>
+                  <p className="text-xs text-gray-500 mt-0.5 truncate max-w-xs">
+                    {productNames}
+                  </p>
                 </div>
-                <p className="text-xs text-gray-400">{order.date}</p>
-                <p className="text-xs text-gray-500 mt-0.5 truncate max-w-xs">
-                  {order.items}
-                </p>
+                <div className="flex items-center gap-4 shrink-0">
+                  <p className="text-sm font-semibold text-tomato">
+                    ${Number(order.totalAmount).toFixed(2)}
+                  </p>
+                  <button
+                    onClick={() => navigate("/myorders")}
+                    className="text-xs border border-gray-200 text-gray-500 px-3 py-1.5 rounded-full hover:border-tomato hover:text-tomato transition-colors"
+                  >
+                    View details
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-4 shrink-0">
-                <p className="text-sm font-semibold text-tomato">
-                  ${order.total.toFixed(2)}
-                </p>
-                <button
-                  onClick={() => navigate("/myorders")}
-                  className="text-xs border border-gray-200 text-gray-500 px-3 py-1.5 rounded-full hover:border-tomato hover:text-tomato transition-colors"
-                >
-                  View details
-                </button>
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>

@@ -8,10 +8,7 @@ export type TOrder = {
     lastName: string;
     email: string;
   };
-  products: {
-    product: TProduct;
-    quantity: number;
-  }[];
+  products: (TProduct & { quantity: number })[];
   totalAmount: number;
   subtotal: number;
   deliveryCost: number;

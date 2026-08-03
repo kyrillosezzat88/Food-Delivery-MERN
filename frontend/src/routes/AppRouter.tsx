@@ -7,6 +7,7 @@ import {
   VerifyEmail,
   Contact,
   NotFound,
+  TrackOrder,
 } from "@pages";
 import { AuthCallback } from "@components/auth";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
           {
             path: "orderCompleted/:orderId",
             element: <CompletedOrder />,
+          },
+          {
+            path: "track-order/:orderId",
+            element: <TrackOrder />,
           },
           {
             path: "profile",

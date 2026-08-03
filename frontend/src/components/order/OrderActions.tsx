@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 
-const OrderActions = () => {
+const OrderActions = ({ orderId }: { orderId: string | null }) => {
   return (
     <div className="flex flex-col sm:flex-row gap-3">
       <Link
-        to="/myorders"
+        to={orderId ? `/track-order/${orderId}` : "#"}
         className="flex-1 bg-primary text-white text-center py-3 rounded-full text-sm font-medium hover:bg-tomato/90 transition-colors"
       >
         Track My Order

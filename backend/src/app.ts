@@ -28,6 +28,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use("/public/uploads", express.static(__dirname + "/public/uploads"));
 
+app.get("/", (req, res) => {
+  return res.send("Welcome to the Food Delivery API");
+});
+
 // All App Routes
 const BaseURL = "/api/v1";
 const Port = process.env.PORT || 5000;

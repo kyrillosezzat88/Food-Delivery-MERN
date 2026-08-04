@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { Model, Document } from "mongoose";
+import { Model } from "mongoose";
 
 export interface PaginationResult<T> {
   currentPage: number;
@@ -9,7 +9,7 @@ export interface PaginationResult<T> {
   data: T[];
 }
 
-export function paginate<T extends Document>(
+export function paginate<T>(
   model: Model<T>,
   populateFields?: string | string[],
 ) {

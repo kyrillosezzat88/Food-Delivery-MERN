@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
 import Logout from "@assets/icons/logout.svg";
 import { logout } from "@store/auth/authSlice";
+
 const Navbar = () => {
   const { token, user } = useAppSelector((state) => state.auth);
   const { items } = useAppSelector((state) => state.cart);
@@ -16,7 +17,7 @@ const Navbar = () => {
     <div className="container">
       <div className="flex justify-between gap-4 py-9">
         <Link to="/" className="text-2xl font-bold">
-          <img src={Logo} />
+          <img src={Logo} alt="Tomato" />
         </Link>
         <div className="gap-4 hidden md:flex text-xl">
           <Link to="/" className="hover:text-gray-700">
@@ -30,9 +31,9 @@ const Navbar = () => {
           </Link>
         </div>
         <div className="flex gap-6 items-center">
-          <img src={SearchIcon} />
+          <img src={SearchIcon} alt="Search" />
           <Link to="/cart" className="relative">
-            <img src={BasketIcon} />
+            <img src={BasketIcon} alt="Basket" />
             {Object.keys(items).length > 0 ? (
               <span className="absolute top-0 -right-2 bg-primary text-white text-xs w-4 h-4 rounded-full flex items-center justify-center"></span>
             ) : null}

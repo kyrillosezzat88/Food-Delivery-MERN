@@ -12,7 +12,7 @@ import {
 } from "@components/auth";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { actLogin, actRegister } from "@store/auth/authSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import type { TUser } from "@components/auth/SignupForm";
 import { toast } from "react-toastify/unstyled";
 const Auth = () => {
@@ -60,9 +60,9 @@ const Auth = () => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="flex justify-center mb-8">
+        <Link to="/" className="flex justify-center mb-8">
           <img src={Logo} alt="logo" className="h-10" />
-        </div>
+        </Link>
 
         {/* Card */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">

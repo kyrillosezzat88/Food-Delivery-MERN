@@ -8,7 +8,6 @@ import {
   SignupForm,
   type AuthMode,
   type TLoginFormData,
-  type SignupFormData,
 } from "@components/auth";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { actLogin, actRegister } from "@store/auth/authSlice";
@@ -46,7 +45,7 @@ const Auth = () => {
     }
   };
 
-  const handleSignup = async (data: SignupFormData) => {
+  const handleSignup = async (data: TUser) => {
     try {
       await dispatch(actRegister(data)).unwrap();
       toast.success("Account created! Please check your email to verify.");

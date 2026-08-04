@@ -1,6 +1,5 @@
 import { useId } from "react";
 import type { InputHTMLAttributes } from "react";
-import type { UseFormRegisterReturn } from "react-hook-form";
 
 const inputClass =
   "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 outline-none focus:border-tomato transition-colors placeholder:text-gray-300";

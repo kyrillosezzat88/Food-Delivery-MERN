@@ -8,6 +8,7 @@ export type TLoginFormData = {
 
 interface LoginFormProps {
   onSubmit: (data: TLoginFormData) => void;
+  setMode?: (mode: "login" | "signup") => void;
 }
 
 const LoginForm = ({ onSubmit }: LoginFormProps) => {

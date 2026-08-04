@@ -68,7 +68,7 @@ const OrderHistory = () => {
             const status = normalizeStatus(order.status);
             const productNames =
               order.products
-                ?.map((item) => item.product?.name || "")
+                ?.map((item) => item.product.name || "")
                 .filter(Boolean)
                 .join(", ") || "No items";
 

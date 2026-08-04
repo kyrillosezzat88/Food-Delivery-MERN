@@ -155,4 +155,4 @@ const SignupForm = ({ onSubmit, setMode }: SignupFormProps) => {
 };
 
 export default SignupForm;
-export type { TUser };
+export type { TUser, RegisterFormData as SignupFormData };

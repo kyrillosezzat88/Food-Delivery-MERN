@@ -1,4 +1,5 @@
 import type { TOrder } from "@types";
+import { useEffect } from "react";
 
 type TOrderSummaryProps = {
   recentOrder: TOrder;
@@ -12,6 +13,9 @@ const OrderSummary = ({
   deliveryCost,
   total,
 }: TOrderSummaryProps) => {
+  useEffect(() => {
+    console.log("OrderSummary rendered with recentOrder:", recentOrder);
+  });
   return (
     <div className="bg-white rounded-2xl border border-gray-100">
       <div className="px-6 py-4 border-b border-gray-100">

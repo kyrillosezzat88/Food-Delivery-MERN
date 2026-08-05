@@ -1,7 +1,6 @@
 import axios from "axios";
 
-axios.defaults.baseURL =
-  "https://food-delivery-backend-tau-rouge.vercel.app/api/v1";
+axios.defaults.baseURL = "https://tomato-backend2.vercel.app/api/v1";
 
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");

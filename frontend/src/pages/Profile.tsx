@@ -1,5 +1,4 @@
 import { useState, type JSX } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   ChangePassword,
   OrderHistory,
@@ -8,6 +7,8 @@ import {
   SavedAddresses,
   type ProfileSection,
 } from "@components/profile";
+import { useAppDispatch } from "@store/hooks";
+import { logout } from "@store/auth/authSlice";
 
 const sectionMap: Record<ProfileSection, JSX.Element> = {
   personal: <PersonalInfo />,
@@ -18,11 +19,10 @@ const sectionMap: Record<ProfileSection, JSX.Element> = {
 
 const Profile = () => {
   const [active, setActive] = useState<ProfileSection>("personal");
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/");
+    dispatch(logout());
   };
 
   return (
